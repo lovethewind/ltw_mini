@@ -1,0 +1,82 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<view class="article-page theme-{{theme}}">
+  <liquid-header title="文章"></liquid-header>
+
+  <view class="article-filter fade-up">
+    <view class="search-bar">
+      <text class="search-bar__icon">⌕</text>
+      <input
+        class="search-bar__input"
+        value="{{keyword}}"
+        placeholder="搜索文章标题"
+        confirm-type="search"
+        bindinput="handleKeywordInput"
+        bindconfirm="handleSearch"
+      />
+      <text wx:if="{{keyword}}" class="search-bar__action" bindtap="handleSearch">搜索</text>
+    </view>
+
+    <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="category-list">
+        <view
+          class="category-chip {{selectedCategoryId === '' ? 'category-chip--selected' : ''}}"
+          data-id=""
+          bindtap="selectCategory"
+        >全部</view>
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="category-chip {{selectedCategoryId == item.id ? 'category-chip--selected' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="selectCategory"
+        >{{item.name}}</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <scroll-view
+    class="article-content"
+    scroll-y
+    enhanced
+    show-scrollbar="{{false}}"
+    lower-threshold="120"
+    bindscrolltolower="onReachBottom"
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="handleRefresh"
+  >
+    <view class="page-shell article-content__shell">
+      <state-view
+        wx:if="{{loading}}"
+        type="loading"
+        title="正在加载文章"
+        description="正在整理最近的内容"
+      ></state-view>
+      <state-view
+        wx:elif="{{error && !articles.length}}"
+        type="error"
+        title="文章加载失败"
+        description="{{error}}"
+        action-text="重新加载"
+        bind:action="loadArticles"
+      ></state-view>
+      <state-view
+        wx:elif="{{!articles.length}}"
+        title="没有找到文章"
+        description="换个关键词或分类试试看"
+      ></state-view>
+      <view wx:else class="article-list fade-up">
+        <article-card
+          wx:for="{{articles}}"
+          wx:key="id"
+          article="{{item}}"
+          bind:select="openArticle"
+        ></article-card>
+        <view class="list-footer">
+          <text wx:if="{{loadingMore}}">正在加载更多…</text>
+          <text wx:elif="{{!hasMore}}">已经看到最后啦</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

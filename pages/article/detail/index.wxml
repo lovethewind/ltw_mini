@@ -1,0 +1,132 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<view wx:if="{{article}}" class="reading-progress" aria-hidden="true">
+  <view class="reading-progress__value" style="transform: scaleX({{readingProgress / 100}});"></view>
+</view>
+<view class="page-scroll theme-{{theme}}">
+  <liquid-header title="文章详情" show-back="{{true}}"></liquid-header>
+
+  <view class="page-shell page-shell--plain">
+  <state-view
+    wx:if="{{loading}}"
+    type="loading"
+    title="正在打开文章"
+    description="好内容值得稍等片刻"
+  ></state-view>
+  <state-view
+    wx:elif="{{error}}"
+    type="error"
+    title="文章打开失败"
+    description="{{error}}"
+    action-text="重新加载"
+    bind:action="loadArticle"
+  ></state-view>
+
+  <view wx:elif="{{article}}" class="article-detail fade-up">
+    <view class="article-hero {{article.displayCover ? 'article-hero--image' : ''}}">
+      <image wx:if="{{article.displayCover}}" class="article-hero__image" src="{{article.displayCover}}" mode="aspectFill"></image>
+      <view class="article-hero__overlay"></view>
+      <view class="article-hero__content">
+        <text class="article-hero__title">{{article.title}}</text>
+        <view class="article-hero__meta">
+          <text>{{article.displayTime}}</text>
+          <text wx:if="{{article.editTime && article.editTime !== article.createTime}}">更新 {{article.displayEditTime}}</text>
+          <text>{{article.viewCount || 0}} 阅读</text>
+          <text>{{article.wordCount}} 字 · 约 {{article.readMinutes}} 分钟</text>
+        </view>
+        <view wx:if="{{article.displayOrigin || article.displayCategory || article.displayTags.length}}" class="article-hero__taxonomy">
+          <text
+            wx:if="{{article.displayOrigin}}"
+            class="article-hero__chip article-hero__chip--origin {{article.displayOrigin === '原创' ? 'article-hero__chip--original' : ''}}"
+          >{{article.displayOrigin}}</text>
+          <text wx:if="{{article.displayCategory}}" class="article-hero__chip article-hero__chip--category">分类 · {{article.displayCategory}}</text>
+          <text
+            wx:for="{{article.displayTags}}"
+            wx:key="*this"
+            class="article-hero__chip"
+          >#{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="author-card">
+      <image wx:if="{{article.user.avatar}}" class="author-card__avatar" src="{{article.user.avatar}}" mode="aspectFill"></image>
+      <view wx:else class="author-card__avatar author-card__avatar--empty">悦</view>
+      <view class="author-card__content">
+        <view class="author-card__name-row">
+          <text class="author-card__name">{{article.user.nickname || '心悦心享'}}</text>
+          <text class="author-card__role">作者</text>
+        </view>
+        <view class="author-card__meta">
+          <view class="author-card__uid-tag">
+            <text class="author-card__uid-label">UID</text>
+            <text>{{article.user.uid || '暂无'}}</text>
+          </view>
+          <text wx:if="{{article.user.gender === 1}}" class="author-card__gender author-card__gender--male" aria-label="男">♂</text>
+          <text wx:elif="{{article.user.gender === 2}}" class="author-card__gender author-card__gender--female" aria-label="女">♀</text>
+          <text wx:else class="author-card__gender author-card__gender--secret" aria-label="性别保密">○</text>
+        </view>
+        <text class="author-card__summary">{{article.user.summary || '分享技术、生活与沿途的微小欢喜'}}</text>
+      </view>
+    </view>
+
+    <view class="article-body">
+      <towxml wx:if="{{hasContent}}" nodes="{{contentNodes}}"></towxml>
+      <view wx:else class="article-body__empty">
+        <text class="article-body__empty-title">正文暂时为空</text>
+        <text class="article-body__empty-description">作者还没有补充文章内容</text>
+      </view>
+    </view>
+
+    <view class="article-share">
+      <view class="article-share__content">
+        <text class="article-share__title">觉得内容不错？</text>
+        <text class="article-share__description">分享给同样感兴趣的朋友</text>
+      </view>
+      <button class="article-share__button pressable" open-type="share">
+        <text class="article-share__icon">↗</text>
+        <text>分享</text>
+      </button>
+    </view>
+
+    <view wx:if="{{article.lastArticle || article.nextArticle}}" class="neighbor-grid">
+      <view
+        class="neighbor-card pressable {{!article.lastArticle ? 'neighbor-card--disabled' : ''}}"
+        data-id="{{article.lastArticle.id}}"
+        bindtap="openNeighbor"
+      >
+        <text class="neighbor-card__label">上一篇</text>
+        <text class="neighbor-card__title">{{article.lastArticle ? article.lastArticle.title : '没有上一篇了'}}</text>
+      </view>
+      <view
+        class="neighbor-card neighbor-card--right pressable {{!article.nextArticle ? 'neighbor-card--disabled' : ''}}"
+        data-id="{{article.nextArticle.id}}"
+        bindtap="openNeighbor"
+      >
+        <text class="neighbor-card__label">下一篇</text>
+        <text class="neighbor-card__title">{{article.nextArticle ? article.nextArticle.title : '没有下一篇了'}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{recommendedArticles.length && !article.lastArticle && !article.nextArticle}}" class="recommend-section">
+      <view class="recommend-section__heading">
+        <text class="recommend-section__title">继续阅读</text>
+        <text class="recommend-section__description">更多最近更新</text>
+      </view>
+      <view class="recommend-section__list">
+        <article-card
+          wx:for="{{recommendedArticles}}"
+          wx:key="id"
+          article="{{item}}"
+          bind:select="openRecommended"
+        ></article-card>
+      </view>
+    </view>
+  </view>
+  </view>
+</view>
+<button
+  wx:if="{{showBackTop && article}}"
+  class="back-top back-top--{{theme}} pressable"
+  aria-label="回到文章顶部"
+  bindtap="backToTop"
+>↑</button>

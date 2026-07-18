@@ -1,0 +1,9 @@
+{
+  "renderer": "webview",
+  "usingComponents": {
+    "article-card": "/components/article-card/article-card",
+    "liquid-header": "/components/liquid-header/liquid-header",
+    "state-view": "/components/state-view/state-view",
+    "towxml": "/towxml/towxml"
+  }
+}

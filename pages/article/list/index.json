@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "liquid-header": "/components/liquid-header/liquid-header",
+    "article-card": "/components/article-card/article-card",
+    "state-view": "/components/state-view/state-view"
+  },
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

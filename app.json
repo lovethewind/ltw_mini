@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/article/list/index",
+    "pages/profile/index",
+    "pages/article/detail/index",
+    "pages/scan/confirm/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "@navigationBarTextStyle",
+    "navigationStyle": "custom",
+    "backgroundColor": "@backgroundColor",
+    "backgroundTextStyle": "@backgroundTextStyle"
+  },
+  "style": "v2",
+  "renderer": "skyline",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "defaultContentBox": true,
+      "tagNameStyleIsolation": "legacy",
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255"
+    }
+  },
+  "componentFramework": "glass-easel",
+  "darkmode": true,
+  "themeLocation": "theme.json",
+  "tabBar": {
+    "custom": true,
+    "color": "#8492a4",
+    "selectedColor": "#2f80ed",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/article/list/index",
+        "text": "文章"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

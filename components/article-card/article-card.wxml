@@ -1,0 +1,15 @@
+<view class="article-card pressable" bindtap="handleTap">
+  <image wx:if="{{article.displayCover}}" class="article-card__cover" src="{{article.displayCover}}" mode="aspectFill" lazy-load></image>
+  <view wx:else class="article-card__cover article-card__cover--empty">
+    <text>心</text>
+  </view>
+  <view class="article-card__content">
+    <text class="article-card__title">{{article.title}}</text>
+    <text wx:if="{{article.summary}}" class="article-card__summary">{{article.summary}}</text>
+    <view class="article-card__meta">
+      <text>{{article.displayTime}}</text>
+      <text wx:if="{{article.viewCount !== undefined && article.viewCount !== null}}" class="article-card__meta-dot">·</text>
+      <text wx:if="{{article.viewCount !== undefined && article.viewCount !== null}}">{{article.viewCount || 0}} 阅读</text>
+    </view>
+  </view>
+</view>

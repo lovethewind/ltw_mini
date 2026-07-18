@@ -1,0 +1,110 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<scroll-view class="page-scroll theme-{{theme}}" scroll-y enhanced show-scrollbar="{{false}}">
+  <liquid-header title="我"></liquid-header>
+
+  <view class="page-shell">
+  <state-view
+    wx:if="{{loading}}"
+    type="loading"
+    title="正在识别微信账号"
+    description="仅用于查询当前微信关联的站内资料"
+  ></state-view>
+  <view wx:elif="{{unbound}}" class="bind-guide fade-up">
+    <view class="bind-guide__icon">
+      <image src="/images/brand-icon.png" mode="aspectFill"></image>
+    </view>
+    <text class="bind-guide__title">当前微信尚未绑定</text>
+    <text class="bind-guide__description">完成关联后，即可在小程序查看 UID、头像和站内账号信息。</text>
+
+    <view class="bind-guide__routes">
+      <view class="bind-route">
+        <view class="bind-route__heading">
+          <text class="bind-route__badge">已有账号</text>
+          <text class="bind-route__title">前往网站个人中心</text>
+        </view>
+        <text class="bind-route__path">账号绑定 → 微信 → 扫码完成绑定</text>
+      </view>
+      <view class="bind-route">
+        <view class="bind-route__heading">
+          <text class="bind-route__badge bind-route__badge--new">新用户</text>
+          <text class="bind-route__title">前往网站登录页面</text>
+        </view>
+        <text class="bind-route__path">微信扫码登录 → 完善资料 → 注册并绑定</text>
+      </view>
+    </view>
+
+    <button class="bind-guide__button pressable" bindtap="loadProfile">我已完成绑定</button>
+    <text class="bind-guide__tip">完成后返回这里，点击按钮即可刷新账号状态</text>
+  </view>
+  <state-view
+    wx:elif="{{error}}"
+    type="error"
+    title="账号信息加载失败"
+    description="{{error}}"
+    action-text="重新加载"
+    bind:action="loadProfile"
+  ></state-view>
+
+  <view wx:elif="{{user}}" class="profile fade-up">
+    <view class="profile-hero">
+      <view class="profile-hero__glow"></view>
+      <view class="profile-hero__top">
+        <image wx:if="{{user.avatar}}" class="profile-hero__avatar" src="{{user.avatar}}" mode="aspectFill"></image>
+        <view wx:else class="profile-hero__avatar profile-hero__avatar--empty">悦</view>
+        <view class="profile-hero__identity">
+          <text class="profile-hero__name">{{user.nickname}}</text>
+          <view class="profile-hero__meta">
+            <view class="profile-hero__uid-tag">
+              <text class="profile-hero__uid-label">UID</text>
+              <text class="profile-hero__uid-value">{{user.uid || '暂无'}}</text>
+            </view>
+            <text wx:if="{{user.gender === 1}}" class="profile-hero__gender profile-hero__gender--male" aria-label="男">♂</text>
+            <text wx:elif="{{user.gender === 2}}" class="profile-hero__gender profile-hero__gender--female" aria-label="女">♀</text>
+            <text wx:else class="profile-hero__gender profile-hero__gender--secret" aria-label="性别保密">○</text>
+            <text class="profile-hero__username">已关联微信</text>
+          </view>
+        </view>
+      </view>
+      <text class="profile-hero__summary">{{user.summary || '这个人很神秘，还没有留下个人简介。'}}</text>
+    </view>
+
+    <view class="section-heading">
+      <text class="section-heading__title">账号信息</text>
+    </view>
+    <view class="info-card">
+      <view class="info-row">
+        <text class="info-row__label">用户编号</text>
+        <text class="info-row__value">{{user.id}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">UID</text>
+        <text class="info-row__value">{{user.uid || '暂未分配'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">性别</text>
+        <text class="info-row__value">{{user.gender === 1 ? '男' : user.gender === 2 ? '女' : '保密'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">微信状态</text>
+        <text class="info-row__value info-row__value--success">已关联</text>
+      </view>
+      <view class="info-row">
+        <text class="info-row__label">所在地区</text>
+        <text class="info-row__value">{{user.address || '暂未填写'}}</text>
+      </view>
+    </view>
+
+    <view class="privacy-tip">小程序不会保存你的微信登录凭证，也不会在这里修改账号资料。</view>
+  </view>
+
+  <view wx:if="{{!loading && !error}}" class="website-card fade-up">
+    <image class="website-card__icon" src="/images/brand-icon.png" mode="aspectFill"></image>
+    <view class="website-card__content">
+      <text class="website-card__label">官方网站</text>
+      <text class="website-card__address" user-select="{{true}}">lovethewind.cn</text>
+      <text class="website-card__description">登录、绑定账号及管理内容请访问网站</text>
+    </view>
+    <text class="website-card__tip">长按复制</text>
+  </view>
+  </view>
+</scroll-view>

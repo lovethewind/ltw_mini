@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "liquid-header": "/components/liquid-header/liquid-header",
+    "state-view": "/components/state-view/state-view"
+  }
+}

@@ -1,0 +1,22 @@
+<view class="header-placeholder" style="height: {{headerPlaceholderHeight}}px;"></view>
+<view class="header">
+  <view class="header__island {{showTheme ? 'header__island--theme' : ''}}" style="height: {{headerHeight}}px; margin-top: {{headerTop}}px; margin-right: {{capsuleRight}}px;">
+    <view wx:if="{{showBack}}" class="header__button pressable" bindtap="handleBack" aria-label="返回">
+      <text class="header__back">‹</text>
+    </view>
+    <view wx:elif="{{showTheme}}" class="header__button pressable" bindtap="handleTheme" aria-label="{{themeLabel}}">
+      <image class="header__theme-icon" src="{{themeIcon}}" mode="aspectFit"></image>
+    </view>
+    <view wx:else class="header__button header__button--ghost"></view>
+    <view class="header__brand">
+      <view wx:if="{{showLogo}}" class="header__logo-frame">
+        <image class="header__logo" src="/images/brand-icon.png" mode="aspectFill"></image>
+      </view>
+      <text class="header__title">{{title}}</text>
+    </view>
+    <view wx:if="{{action && !showTheme}}" class="header__button pressable" bindtap="handleAction" aria-label="{{action}}">
+      <text class="header__action">{{action}}</text>
+    </view>
+    <view wx:elif="{{!showTheme}}" class="header__button header__button--ghost"></view>
+  </view>
+</view>

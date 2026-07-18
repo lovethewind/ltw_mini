@@ -1,0 +1,11 @@
+<view class="state-view state-view--{{type}} fade-up">
+  <view class="state-view__icon">
+    <text wx:if="{{type === 'loading'}}">◌</text>
+    <text wx:elif="{{type === 'success'}}">✓</text>
+    <text wx:elif="{{type === 'error'}}">!</text>
+    <text wx:else>⌁</text>
+  </view>
+  <text class="state-view__title">{{title}}</text>
+  <text wx:if="{{description}}" class="state-view__description">{{description}}</text>
+  <button wx:if="{{actionText}}" class="state-view__button" bindtap="handleAction">{{actionText}}</button>
+</view>

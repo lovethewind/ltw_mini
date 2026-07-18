@@ -1,0 +1,101 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<scroll-view class="page-scroll theme-{{theme}}" scroll-y enhanced show-scrollbar="{{false}}">
+  <liquid-header title="扫码确认" show-back="{{true}}"></liquid-header>
+
+  <view class="page-shell page-shell--plain scan-page">
+  <state-view
+    wx:if="{{status === 'loading'}}"
+    type="loading"
+    title="正在识别账号"
+    description="请稍候，我们正在确认二维码用途和微信账号"
+  ></state-view>
+
+  <state-view
+    wx:elif="{{status === 'submitting'}}"
+    type="loading"
+    title="正在确认操作"
+    description="请不要关闭页面"
+  ></state-view>
+
+  <state-view
+    wx:elif="{{status === 'cancelling'}}"
+    type="loading"
+    title="正在取消操作"
+    description="请稍候"
+  ></state-view>
+
+  <state-view
+    wx:elif="{{status === 'success'}}"
+    type="success"
+    title="确认成功"
+    description="网页端已经收到验证结果，可以返回网页继续操作。"
+    action-text="返回首页"
+    bind:action="goHome"
+  ></state-view>
+
+  <state-view
+    wx:elif="{{status === 'cancelled'}}"
+    type="success"
+    title="操作已取消"
+    description="网页端会停止本次操作，如需继续请重新获取二维码。"
+    action-text="返回首页"
+    bind:action="goHome"
+  ></state-view>
+
+  <state-view
+    wx:elif="{{status === 'error'}}"
+    type="error"
+    title="无法完成确认"
+    description="{{error}}"
+    action-text="重新识别"
+    bind:action="retry"
+  ></state-view>
+
+  <view wx:elif="{{status === 'ready'}}" class="confirm-panel fade-up">
+    <view class="confirm-card">
+      <view class="confirm-card__icon">✓</view>
+      <text class="confirm-card__title">{{scanCopy.title}}</text>
+      <text class="confirm-card__description">{{scanCopy.description}}</text>
+
+      <view wx:if="{{bound}}" class="account-card">
+        <image wx:if="{{user.avatar}}" class="account-card__avatar" src="{{user.avatar}}" mode="aspectFill"></image>
+        <view wx:else class="account-card__avatar account-card__avatar--empty">悦</view>
+        <view class="account-card__identity">
+          <text class="account-card__name">{{user.nickname}}</text>
+          <view class="account-card__meta">
+            <view class="account-card__uid-tag">
+              <text class="account-card__uid-label">UID</text>
+              <text>{{user.uid || '暂无'}}</text>
+            </view>
+            <text wx:if="{{user.gender === 1}}" class="account-card__gender account-card__gender--male" aria-label="男">♂</text>
+            <text wx:elif="{{user.gender === 2}}" class="account-card__gender account-card__gender--female" aria-label="女">♀</text>
+            <text wx:else class="account-card__gender account-card__gender--secret" aria-label="性别保密">○</text>
+            <text class="account-card__linked">已关联微信</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:else class="account-card account-card--unbound">
+        <view class="account-card__avatar account-card__avatar--empty">?</view>
+        <view class="account-card__identity">
+          <text class="account-card__name">微信尚未关联账号</text>
+          <text class="account-card__status">{{scanCopy.unboundDescription}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="security-tip">
+      <text class="security-tip__title">安全提示</text>
+      <text class="security-tip__description">请确认本次操作由你本人在网页端发起。不要确认来源不明的二维码。</text>
+    </view>
+
+    <button
+      class="confirm-button {{!canConfirm ? 'confirm-button--disabled' : ''}}"
+      disabled="{{!canConfirm}}"
+      bindtap="confirm"
+    >确认是我本人操作</button>
+    <button class="cancel-button" bindtap="cancel">取消本次操作</button>
+    <text wx:if="{{!canConfirm}}" class="confirm-disabled-tip">当前微信与本次验证要求不匹配，请返回网页更换验证方式。</text>
+  </view>
+  </view>
+</scroll-view>

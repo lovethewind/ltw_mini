@@ -1,0 +1,42 @@
+{
+  "setting": {
+		"es6": true,
+    "postcss": true,
+		"minified": true,
+    "uglifyFileName": false,
+    "enhance": false,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useCompilerPlugins": false,
+    "minifyWXML": true,
+    "condition": true
+  },
+  "compileType": "miniprogram",
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": ".superpowers"
+      },
+      {
+        "type": "file",
+        "value": "project.private.config.json"
+      },
+      {
+        "type": "file",
+        "value": ".eslintrc.js"
+      },
+      {
+        "type": "file",
+        "value": ".gitignore"
+      }
+    ],
+    "include": []
+  },
+  "appid": "wx033f6612db3fd053",
+  "editorSetting": {}
+}

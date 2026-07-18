@@ -1,0 +1,235 @@
+.scan-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.confirm-panel {
+  width: 100%;
+}
+
+.confirm-card {
+  padding: 48rpx 34rpx 34rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1rpx solid var(--border);
+  border-radius: 42rpx;
+  text-align: center;
+  background: var(--surface);
+  backdrop-filter: blur(16px) saturate(145%);
+  box-shadow: 0 28rpx 70rpx rgba(30, 62, 106, 0.13), inset 0 1rpx 0 #ffffff;
+}
+
+.confirm-card__icon {
+  width: 118rpx;
+  height: 118rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 38rpx;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ed, #22c55e);
+  box-shadow: 0 20rpx 42rpx rgba(47, 128, 237, 0.24);
+  font-size: 54rpx;
+  font-weight: 700;
+}
+
+.confirm-card__title {
+  margin-top: 28rpx;
+  font-size: 38rpx;
+  font-weight: 850;
+}
+
+.confirm-card__description {
+  max-width: 560rpx;
+  margin-top: 13rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.account-card {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 34rpx;
+  padding: 22rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  border-radius: 26rpx;
+  text-align: left;
+  background: var(--surface-muted);
+}
+
+.account-card--unbound {
+  background: var(--warning-surface);
+}
+
+.account-card__avatar {
+  width: 78rpx;
+  height: 78rpx;
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface-muted);
+}
+
+.account-card__avatar--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2f80ed;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.account-card__identity {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-card__name {
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.account-card__meta {
+  margin-top: 8rpx;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9rpx;
+}
+
+.account-card__uid-tag {
+  min-height: 34rpx;
+  padding: 0 12rpx;
+  display: inline-flex;
+  align-items: center;
+  border: 1rpx solid rgba(47, 128, 237, 0.18);
+  border-radius: 999rpx;
+  color: #2f80ed;
+  background: rgba(47, 128, 237, 0.08);
+  font-size: 19rpx;
+  font-weight: 650;
+}
+
+.account-card__uid-label {
+  margin-right: 7rpx;
+  font-size: 16rpx;
+  opacity: 0.68;
+}
+
+.account-card__gender {
+  width: 34rpx;
+  height: 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 23rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.account-card__gender--male {
+  color: #2378db;
+  background: rgba(43, 143, 255, 0.12);
+}
+
+.account-card__gender--female {
+  color: #d94f91;
+  background: rgba(255, 105, 180, 0.12);
+}
+
+.account-card__gender--secret {
+  color: var(--text-secondary);
+  background: rgba(123, 137, 156, 0.12);
+}
+
+.account-card__linked {
+  color: #20a969;
+  font-size: 19rpx;
+  font-weight: 650;
+}
+
+.account-card__status {
+  margin-top: 7rpx;
+  color: #7b899c;
+  font-size: 21rpx;
+  line-height: 1.45;
+}
+
+.security-tip {
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  border-radius: 26rpx;
+  color: var(--warning-text);
+  background: var(--warning-surface);
+}
+
+.security-tip__title {
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.security-tip__description {
+  margin-top: 7rpx;
+  font-size: 22rpx;
+  line-height: 1.55;
+}
+
+.confirm-button {
+  height: 94rpx;
+  margin-top: 26rpx;
+  border-radius: 30rpx;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f80ed, #22a6f2);
+  box-shadow: 0 18rpx 40rpx rgba(47, 128, 237, 0.22);
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 94rpx;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.confirm-button:active {
+  opacity: 0.88;
+  transform: scale(0.98);
+}
+
+.confirm-button--disabled {
+  color: #91a0b2;
+  background: var(--disabled-surface);
+  box-shadow: none;
+}
+
+.cancel-button {
+  height: 82rpx;
+  margin-top: 16rpx;
+  border: 1rpx solid var(--border);
+  border-radius: 28rpx;
+  color: var(--text-secondary);
+  background: var(--surface);
+  font-size: 25rpx;
+  font-weight: 750;
+  line-height: 82rpx;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.cancel-button:active {
+  opacity: 0.76;
+  transform: scale(0.98);
+}
+
+.confirm-disabled-tip {
+  display: block;
+  margin: 16rpx 24rpx 0;
+  color: #8a6a35;
+  text-align: center;
+  font-size: 21rpx;
+  line-height: 1.55;
+}
