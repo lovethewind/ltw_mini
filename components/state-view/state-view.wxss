@@ -23,7 +23,11 @@
   font-weight: 700;
 }
 
-.state-view--loading .state-view__icon text {
+.state-view__spinner {
+  width: 44rpx;
+  height: 44rpx;
+  display: block;
+  transform-origin: center center;
   animation: spin 900ms linear infinite;
 }
 

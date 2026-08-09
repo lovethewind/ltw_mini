@@ -2,7 +2,14 @@
 <view class="article-page theme-{{theme}}">
   <liquid-header title="文章"></liquid-header>
 
-  <view class="article-filter fade-up">
+  <view wx:if="{{compatibilityLoading}}" class="page-shell">
+    <state-view type="loading" loading="{{true}}" title="正在加载" description="请稍候"></state-view>
+  </view>
+  <view wx:elif="{{!articleEnabled}}" class="page-shell">
+    <state-view title="功能维护中" description="当前版本暂未开放此功能"></state-view>
+  </view>
+
+  <view wx:else class="article-filter fade-up">
     <view class="search-bar">
       <text class="search-bar__icon">⌕</text>
       <input
@@ -35,6 +42,7 @@
   </view>
 
   <scroll-view
+    wx:if="{{articleEnabled}}"
     class="article-content"
     scroll-y
     enhanced
@@ -49,6 +57,7 @@
       <state-view
         wx:if="{{loading}}"
         type="loading"
+        loading="{{true}}"
         title="正在加载文章"
         description="正在整理最近的内容"
       ></state-view>

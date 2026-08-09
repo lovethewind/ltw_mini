@@ -6,6 +6,7 @@
   <state-view
     wx:if="{{status === 'loading'}}"
     type="loading"
+    loading="{{true}}"
     title="正在识别账号"
     description="请稍候，我们正在确认二维码用途和微信账号"
   ></state-view>
@@ -13,6 +14,7 @@
   <state-view
     wx:elif="{{status === 'submitting'}}"
     type="loading"
+    loading="{{true}}"
     title="正在确认操作"
     description="请不要关闭页面"
   ></state-view>
@@ -20,6 +22,7 @@
   <state-view
     wx:elif="{{status === 'cancelling'}}"
     type="loading"
+    loading="{{true}}"
     title="正在取消操作"
     description="请稍候"
   ></state-view>

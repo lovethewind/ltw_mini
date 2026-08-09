@@ -1,44 +1,10 @@
 const { addArticleViewCount, getArticleDetail, getCategories, getTags } = require('../../../utils/article')
 const { formatDate, normalizeArticle, normalizeArticleContent, normalizeMediaUrl, stripHtml } = require('../../../utils/format')
 const { getThemeState, subscribeTheme } = require('../../../utils/theme')
+const { isArticleContentCompatible } = require('../../../utils/runtime')
 
 /**
- * 引导用户前往系统设置开启微信剪贴板权限。
- *
- * @returns {void}
- */
-function showClipboardPermissionGuide() {
-  wx.showModal({
-    title: '需要剪贴板权限',
-    content: '系统未允许微信使用剪贴板，请在系统设置中开启相关权限后重试。',
-    confirmText: '去设置',
-    cancelText: '稍后再说',
-    success(result) {
-      if (!result.confirm) return
-      if (typeof wx.openAppAuthorizeSetting !== 'function') {
-        wx.showModal({
-          title: '请手动开启',
-          content: '请前往手机设置，在微信的权限管理中开启剪贴板权限。',
-          showCancel: false
-        })
-        return
-      }
-      wx.openAppAuthorizeSetting({
-        fail(error) {
-          console.error('打开微信授权设置失败', error)
-          wx.showModal({
-            title: '请手动开启',
-            content: '请前往手机设置，在微信的权限管理中开启剪贴板权限。',
-            showCancel: false
-          })
-        }
-      })
-    }
-  })
-}
-
-/**
- * 处理文章正文中的复制代码操作。
+ * 处理文章正文中的图片预览操作。
  *
  * @param {WechatMiniprogram.TouchEvent} event Towxml 点击事件。
  * @returns {void}
@@ -53,31 +19,7 @@ function handleArticleContentTap(event) {
       current: imageUrl,
       urls: [imageUrl]
     })
-    return
   }
-  const className = node && node.attr ? String(node.attr.class || '') : ''
-  if (!className.includes('h2w__copyButton')) return
-  const code = String(node.attr.data || '')
-  if (!code) {
-    wx.showToast({ title: '没有可复制的内容', icon: 'none' })
-    return
-  }
-  wx.setClipboardData({
-    data: code,
-    fail(error) {
-      console.error('复制代码失败', error)
-      const errorMessage = String(error && error.errMsg ? error.errMsg : '')
-      if (/system permission denied/i.test(errorMessage)) {
-        showClipboardPermissionGuide()
-        return
-      }
-      wx.showModal({
-        title: '复制失败',
-        content: errorMessage || '剪贴板调用失败，请重试',
-        showCancel: false
-      })
-    }
-  })
 }
 
 /**
@@ -133,7 +75,6 @@ function calculateReadingStats(content) {
 function renderArticleContent(content, isMarkdown, theme) {
   return getApp().towxml(content, isMarkdown ? 'markdown' : 'html', {
     theme: theme === 'dark' ? 'dark' : 'light',
-    copyCode: true,
     highlightCode: true,
     events: {
       tap: handleArticleContentTap
@@ -150,6 +91,7 @@ Page({
     contentIsMarkdown: false,
     contentNodes: {},
     hasContent: false,
+    contentEnabled: false,
     recommendedArticles: [],
     readingProgress: 0,
     showBackTop: false,
@@ -249,14 +191,27 @@ Page({
   async loadArticle() {
     this.setData({ loading: true, error: '' })
     try {
+      const contentEnabled = await isArticleContentCompatible()
+      if (!contentEnabled) {
+        this.setData({
+          article: null,
+          sourceContent: '',
+          contentNodes: {},
+          hasContent: false,
+          contentEnabled: false,
+          loading: false
+        })
+        return
+      }
+      this.setData({ contentEnabled: true })
       const [articleData, categories, tagData] = await Promise.all([
         getArticleDetail(this.data.articleId),
         getCategories().catch(() => []),
         getTags().catch(() => ({ records: [] }))
       ])
       const article = enrichArticleMetadata(articleData, categories, tagData)
-      const content = normalizeArticleContent(article.content)
-      const readingStats = calculateReadingStats(content)
+      const content = contentEnabled ? normalizeArticleContent(article.content) : ''
+      const readingStats = contentEnabled ? calculateReadingStats(content) : { wordCount: 0, readMinutes: 0 }
       const normalized = {
         ...article,
         ...readingStats,
@@ -284,6 +239,7 @@ Page({
         contentIsMarkdown,
         contentNodes: hasContent ? renderArticleContent(content, contentIsMarkdown, this.data.theme) : {},
         hasContent,
+        contentEnabled,
         recommendedArticles,
         loading: false
       }, () => this.measurePageHeight())

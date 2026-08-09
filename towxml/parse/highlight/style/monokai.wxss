@@ -6,7 +6,8 @@ Monokai style - ported by Luigi Maselli - http://grigio.org
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  background: #272822; color: #ddd;
+  background: var(--h2w-code-highlight);
+  color: var(--h2w-code-highlight-text);
 }
 
 .h2w-dark .hljs-tag,
@@ -15,22 +16,22 @@ Monokai style - ported by Luigi Maselli - http://grigio.org
 .h2w-dark .hljs-literal,
 .h2w-dark .hljs-strong,
 .h2w-dark .hljs-name {
-  color: #f92672;
+  color: var(--h2w-code-highlight-keyword-color);
 }
 
 .h2w-dark .hljs-code {
-  color: #66d9ef;
+  color: var(--h2w-code-highlight-number-color);
 }
 
 .h2w-dark .hljs-class .hljs-title {
-  color: white;
+  color: var(--h2w-code-highlight-title-color);
 }
 
 .h2w-dark .hljs-attribute,
 .h2w-dark .hljs-symbol,
 .h2w-dark .hljs-regexp,
 .h2w-dark .hljs-link {
-  color: #bf79db;
+  color: var(--h2w-code-highlight-regexp-color);
 }
 
 .h2w-dark .hljs-string,
@@ -48,14 +49,14 @@ Monokai style - ported by Luigi Maselli - http://grigio.org
 .h2w-dark .hljs-variable,
 .h2w-dark .hljs-template-tag,
 .h2w-dark .hljs-template-variable {
-  color: #a6e22e;
+  color: var(--h2w-code-highlight-string-color);
 }
 
 .h2w-dark .hljs-comment,
 .h2w-dark .hljs-quote,
 .h2w-dark .hljs-deletion,
 .h2w-dark .hljs-meta {
-  color: #75715e;
+  color: var(--h2w-code-highlight-comment-color);
 }
 
 .h2w-dark .hljs-keyword,

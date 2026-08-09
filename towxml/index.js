@@ -155,38 +155,6 @@ function normalizeHtmlCodeBlocks(node,option) {
 }
 
 /**
- * 为 Towxml 代码块插入复制按钮。
- *
- * @param {Record<string, any>} node Towxml 节点。
- * @returns {void}
- */
-function appendCodeCopyButtons(node) {
-    if (!node || !Array.isArray(node.child)) return;
-    const className = node.attr ? String(node.attr.class || '') : '';
-    if (className.includes('h2w__pre')) {
-        const codeNode = node.child.find(item => {
-            const childClassName = item.attr ? String(item.attr.class || '') : '';
-            return childClassName.includes('h2w__code');
-        });
-        if (codeNode) {
-            const code = extractCodeText(codeNode)
-                .replace(/^[ \t]+$/gm,'')
-                .replace(/\n$/,'');
-            node.child.unshift({
-                type:'tag',
-                tag:'view',
-                attr:{
-                    class:'h2w__copyButton',
-                    data:code
-                },
-                child:[{type:'text',text:'复制'}]
-            });
-        }
-    }
-    node.child.forEach(appendCodeCopyButtons);
-}
-
-/**
  * 将 HTML 或 Markdown 转换为 Towxml 渲染节点。
  *
  * @param {string} str 原始内容。
@@ -210,9 +178,6 @@ function towxml(str,type,option) {
     };
     if(type === 'html'){
         normalizeHtmlCodeBlocks(result,option);
-    };
-    if(option.copyCode){
-        appendCodeCopyButtons(result);
     };
     return result;
 }

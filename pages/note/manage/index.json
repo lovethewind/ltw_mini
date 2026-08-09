@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "liquid-header": "/components/liquid-header/liquid-header",
+    "note-dialog": "/components/note-dialog/index",
+    "state-view": "/components/state-view/state-view"
+  }
+}

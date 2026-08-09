@@ -10,6 +10,45 @@ function getWechatUserInfo(code) {
   })
 }
 
+function getUserInfo() {
+  return request({
+    url: '/user/info'
+  })
+}
+
+function loginUser(username, password) {
+  return request({
+    url: '/user/common/login',
+    method: 'POST',
+    data: { username, password }
+  })
+}
+
+function loginWechatUser(code) {
+  return request({
+    url: '/user/common/wechat/login',
+    method: 'POST',
+    data: { code }
+  })
+}
+
+function registerWechatUser(username, password, nickname, code) {
+  const data = { username, password, nickname: nickname || username, code }
+  return request({
+    url: '/user/common/wechat/appletRegister',
+    method: 'POST',
+    data
+  })
+}
+
+function checkUsernameExists(username) {
+  return request({
+    url: '/common/common/validAccountExists',
+    method: 'POST',
+    data: { username }
+  })
+}
+
 function confirmWechatScan(code, state) {
   return request({
     url: '/user/common/wechat/scanCallback',
@@ -59,7 +98,12 @@ function notifyWechatScan(code, state) {
 
 module.exports = {
   cancelWechatScan,
+  checkUsernameExists,
   confirmWechatScan,
+  getUserInfo,
   getWechatUserInfo,
+  loginUser,
+  loginWechatUser,
+  registerWechatUser,
   notifyWechatScan
 }

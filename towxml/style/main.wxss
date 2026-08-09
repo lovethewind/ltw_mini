@@ -9,6 +9,86 @@
     text-align:left;
 }
 
+/**主题变量 — 浅色**/
+.h2w-light {
+    --h2w-text: #233247;
+    --h2w-border: #eee;
+    --h2w-thead-bg: #f6f8fa;
+    --h2w-stripe-bg: #fbfcfd;
+    --h2w-cell-border: #dfe2e5;
+    --h2w-pre-bg: #f4f7fb;
+    --h2w-pre-border: #dce5f0;
+    --h2w-code-bg: #f6f8fa;
+    --h2w-code-border: #eaedf0;
+    --h2w-blockquote-border: #dfe2e5;
+    --h2w-blockquote-bg: #f5f8fc;
+    --h2w-link-color: #1aad16;
+    --h2w-link-border: #b9d9b8;
+    --h2w-hr-bg: #eee;
+    --h2w-mark-bg: yellow;
+    --h2w-mark-color: black;
+    --h2w-linenum-color: #ccc;
+    --h2w-todo-checkbox-bg: #e0e0e0;
+    --h2w-todo-checkbox-border: #d0d0d0;
+    --h2w-todo-checkbox-checked-bg: green;
+    --h2w-todo-checkbox-checked-border: #b9d9b8;
+    --h2w-code-highlight: #f8f8f8;
+    --h2w-code-highlight-text: #333;
+    --h2w-code-highlight-keyword-color: #333;
+    --h2w-code-highlight-number-color: #008080;
+    --h2w-code-highlight-string-color: #d14;
+    --h2w-code-highlight-title-color: #900;
+    --h2w-code-highlight-type-color: #458;
+    --h2w-code-highlight-tag-color: #000080;
+    --h2w-code-highlight-regexp-color: #009926;
+    --h2w-code-highlight-symbol-color: #990073;
+    --h2w-code-highlight-built-in-color: #0086b3;
+    --h2w-code-highlight-meta-color: #999;
+    --h2w-code-highlight-comment-color: #998;
+    --h2w-code-highlight-deletion-bg: #fdd;
+    --h2w-code-highlight-addition-bg: #dfd;
+}
+
+/**主题变量 — 深色**/
+.h2w-dark {
+    --h2w-text: #dbe7f6;
+    --h2w-border: #3d3d3d;
+    --h2w-thead-bg: #1f1f1f;
+    --h2w-stripe-bg: #090909;
+    --h2w-cell-border: #333;
+    --h2w-pre-bg: #08111f;
+    --h2w-pre-border: #2a3b52;
+    --h2w-code-bg: #272822;
+    --h2w-code-border: #1b1c18;
+    --h2w-blockquote-border: #3c587a;
+    --h2w-blockquote-bg: #111d2e;
+    --h2w-link-color: #1aad16;
+    --h2w-link-border: #4d804b;
+    --h2w-hr-bg: #242424;
+    --h2w-mark-bg: yellow;
+    --h2w-mark-color: black;
+    --h2w-linenum-color: #494949;
+    --h2w-todo-checkbox-bg: #2e2e2e;
+    --h2w-todo-checkbox-border: #494949;
+    --h2w-todo-checkbox-checked-bg: green;
+    --h2w-todo-checkbox-checked-border: #4d804b;
+    --h2w-code-highlight: #272822;
+    --h2w-code-highlight-text: #ddd;
+    --h2w-code-highlight-keyword-color: #f92672;
+    --h2w-code-highlight-number-color: #a6e22e;
+    --h2w-code-highlight-string-color: #a6e22e;
+    --h2w-code-highlight-title-color: white;
+    --h2w-code-highlight-type-color: #a6e22e;
+    --h2w-code-highlight-tag-color: #f92672;
+    --h2w-code-highlight-regexp-color: #bf79db;
+    --h2w-code-highlight-symbol-color: #bf79db;
+    --h2w-code-highlight-built-in-color: #a6e22e;
+    --h2w-code-highlight-meta-color: #75715e;
+    --h2w-code-highlight-comment-color: #75715e;
+    --h2w-code-highlight-deletion-bg: rgba(255,100,100,.15);
+    --h2w-code-highlight-addition-bg: rgba(100,255,100,.1);
+}
+
 .h2w__main {
     margin: 0;
     padding: 0;
@@ -203,23 +283,6 @@
     padding-bottom: 16rpx;
     font-size: 88%;
     line-height: 1.7;
-}
-
-.h2w__copyButton {
-    position: absolute;
-    top: 14rpx;
-    right: 16rpx;
-    z-index: 2;
-    width: 60rpx;
-    height: 40rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    border-radius: 12rpx;
-    font-size: 20rpx;
-    font-weight: 600;
-    line-height: 40rpx;
 }
 
 /**列表**/

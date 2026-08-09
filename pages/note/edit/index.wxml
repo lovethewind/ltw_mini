@@ -1,0 +1,137 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<view class="note-edit-page theme-{{theme}}">
+  <liquid-header title="{{editing ? '编辑笔记' : '笔记详情'}}" show-back="{{true}}"></liquid-header>
+  <view class="page-shell note-edit-shell {{editing ? 'note-edit-shell--editing' : ''}}">
+    <state-view wx:if="{{loading}}" type="loading" loading="{{true}}" title="正在打开笔记" description="同步最新内容"></state-view>
+    <state-view wx:elif="{{error}}" type="error" title="笔记打开失败" description="{{error}}" action-text="重新加载" bind:action="loadEditor"></state-view>
+
+    <view wx:elif="{{note && !editing}}" class="note-reader fade-up">
+      <view class="note-reader__eyebrow">
+        <text>{{folderName}}</text>
+        <text>私人笔记</text>
+      </view>
+      <text class="note-reader__title" user-select="{{true}}">{{note.title || '无标题笔记'}}</text>
+      <view wx:if="{{note.tagList.length}}" class="note-reader__tags">
+        <text wx:for="{{note.tagList}}" wx:key="id">#{{item.name}}</text>
+      </view>
+      <view class="note-reader__actions">
+        <button class="reader-action reader-action--primary pressable" bindtap="enterEditMode">编辑笔记</button>
+        <button class="reader-action reader-action--secondary pressable" bindtap="openMoreMenu">更多</button>
+      </view>
+      <view class="note-reader__divider"></view>
+      <view class="note-reader__content">
+        <towxml nodes="{{contentNodes}}"></towxml>
+      </view>
+    </view>
+
+    <view wx:elif="{{note}}" class="note-editor fade-up">
+      <view class="note-editor__status-row">
+        <text class="save-status save-status--{{saveStatus === '保存失败' ? 'error' : saving ? 'saving' : 'normal'}}">{{saveStatus}}</text>
+        <view class="note-editor__actions">
+          <button class="note-action" bindtap="toggleMetadata">设置</button>
+          <button class="note-action note-action--primary" loading="{{saving}}" bindtap="finishEditing">完成</button>
+        </view>
+      </view>
+
+      <input class="note-title" value="{{note.title}}" maxlength="100" placeholder="无标题笔记" bindinput="updateTitle" />
+
+      <scroll-view class="markdown-toolbar" scroll-x show-scrollbar="{{false}}">
+        <view class="markdown-toolbar__items">
+          <button data-action="heading" bindtap="insertMarkdown">H2</button>
+          <button data-action="bold" bindtap="insertMarkdown">B</button>
+          <button data-action="italic" bindtap="insertMarkdown">I</button>
+          <button data-action="checklist" bindtap="insertMarkdown">☑</button>
+          <button data-action="quote" bindtap="insertMarkdown">❝</button>
+          <button data-action="code" bindtap="insertMarkdown">代码</button>
+          <button data-action="link" bindtap="insertMarkdown">链接</button>
+        </view>
+      </scroll-view>
+      <textarea
+        class="note-content"
+        value="{{note.content}}"
+        maxlength="-1"
+        placeholder="开始记录…"
+        cursor-spacing="120"
+        cursor="{{cursorPosition}}"
+        focus="{{editorFocused}}"
+        bindinput="updateContent"
+        bindselect="captureSelection"
+      ></textarea>
+    </view>
+  </view>
+
+  <view wx:if="{{metadataVisible || historyVisible || historyPreviewVisible}}" class="panel-backdrop" bindtap="closePanels"></view>
+
+  <view wx:if="{{metadataVisible}}" class="bottom-panel bottom-panel--settings">
+    <view class="bottom-panel__handle"></view>
+    <view class="bottom-panel__heading">
+      <view><text class="bottom-panel__title">笔记设置</text><text class="bottom-panel__description">整理文件夹和标签</text></view>
+      <text class="bottom-panel__close" bindtap="closePanels">完成</text>
+    </view>
+    <view class="setting-row" bindtap="openFolderDialog"><text>文件夹</text><text>{{folderName}} ›</text></view>
+    <view class="setting-tags">
+      <text class="setting-tags__label">标签</text>
+      <view class="note-tags">
+        <text wx:for="{{tags}}" wx:key="id" class="note-tag {{item.selected ? 'note-tag--active' : ''}}" data-id="{{item.id}}" bindtap="toggleTag">#{{item.name}}</text>
+        <text wx:if="{{!tags.length}}" class="note-tag-empty">暂无标签</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{historyVisible}}" class="bottom-panel bottom-panel--history">
+    <view class="bottom-panel__handle"></view>
+    <view class="bottom-panel__heading">
+      <view><text class="bottom-panel__title">历史版本</text><text class="bottom-panel__description">最多保留 50 条</text></view>
+      <text class="bottom-panel__close" bindtap="closePanels">关闭</text>
+    </view>
+    <scroll-view class="history-scroll" scroll-y>
+      <view wx:if="{{histories.length}}" class="history-list">
+        <view wx:for="{{histories}}" wx:key="id" class="history-item pressable" data-id="{{item.id}}" bindtap="showHistoryActions">
+          <view><text class="history-item__title">{{item.title || '无标题笔记'}}</text><text class="history-item__preview">{{item.contentPreview || '正文为空'}}</text></view>
+          <text class="history-item__time">{{item.displayTime}} ›</text>
+        </view>
+      </view>
+      <text wx:else class="history-empty">保存修改后会在这里生成历史版本</text>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{historyPreviewVisible}}" class="bottom-panel bottom-panel--preview">
+    <view class="bottom-panel__heading history-preview__heading">
+      <view>
+        <text class="bottom-panel__title">{{historyPreviewTitle}}</text>
+        <text class="bottom-panel__description">历史版本 · {{historyPreviewTime}}</text>
+      </view>
+    </view>
+    <scroll-view class="history-preview-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <view wx:if="{{historyPreviewHasContent}}" class="history-preview-content">
+        <towxml nodes="{{historyPreviewNodes}}"></towxml>
+      </view>
+      <text wx:else class="history-preview-empty">正文为空</text>
+    </scroll-view>
+    <view class="history-preview-actions">
+      <button class="history-preview-action history-preview-action--restore" bindtap="restorePreviewHistory">恢复</button>
+      <button class="history-preview-action history-preview-action--delete" bindtap="deletePreviewHistory">删除</button>
+      <button class="history-preview-action history-preview-action--back" bindtap="closeHistoryPreview">返回</button>
+    </view>
+  </view>
+  <note-dialog
+    visible="{{dialog.visible}}"
+    mode="{{dialog.mode}}"
+    title="{{dialog.title}}"
+    description="{{dialog.description}}"
+    value="{{dialog.value}}"
+    placeholder="{{dialog.placeholder}}"
+    confirm-text="{{dialog.confirmText}}"
+    danger="{{dialog.danger}}"
+    items-json="{{dialog.itemsJson}}"
+    bind:close="closeDialog"
+    bind:confirm="submitDialog"
+    bind:select="submitDialog"
+  ></note-dialog>
+</view>
+<button
+  wx:if="{{showBackTop && note && !editing}}"
+  class="note-back-top note-back-top--{{theme}} pressable"
+  aria-label="回到笔记顶部"
+  bindtap="backToTop"
+>↑</button>

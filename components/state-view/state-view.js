@@ -4,6 +4,10 @@ Component({
       type: String,
       value: 'empty'
     },
+    loading: {
+      type: Boolean,
+      value: false
+    },
     title: {
       type: String,
       value: ''

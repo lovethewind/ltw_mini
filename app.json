@@ -1,6 +1,9 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/note/index",
+    "pages/note/edit/index",
+    "pages/note/manage/index",
     "pages/article/list/index",
     "pages/profile/index",
     "pages/article/detail/index",
@@ -36,6 +39,10 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页"
+      },
+      {
+        "pagePath": "pages/note/index",
+        "text": "笔记"
       },
       {
         "pagePath": "pages/article/list/index",

@@ -6,12 +6,12 @@
   <view class="hero fade-up">
     <view class="hero__orb hero__orb--top"></view>
     <view class="hero__orb hero__orb--bottom"></view>
-    <text class="hero__eyebrow">TODAY · 心情随笔</text>
+    <text class="hero__eyebrow">NOTE · 我的笔记</text>
     <view class="hero__title">
-      <text>让每一次记录</text>
-      <text>都有温度</text>
+      <text>记下每一个</text>
+      <text>闪过的念头</text>
     </view>
-    <text class="hero__description">分享技术、生活与沿途的微小欢喜</text>
+    <text class="hero__description">随时记录灵感、想法与生活片段</text>
   </view>
 
   <view class="quick-grid fade-up">
@@ -22,13 +22,27 @@
       <text class="quick-card__title">扫码验证</text>
       <text class="quick-card__description">确认网站登录与账号操作</text>
     </view>
-    <view class="quick-card pressable" bindtap="openArticles">
-      <view class="quick-card__icon">⌕</view>
-      <text class="quick-card__title">浏览文章</text>
-      <text class="quick-card__description">看看最近写下的新内容</text>
+    <view class="quick-card quick-card--note pressable" bindtap="openNotes">
+      <view class="quick-card__icon">✦</view>
+      <text class="quick-card__title">我的笔记</text>
+      <text class="quick-card__description">记录只属于自己的想法</text>
     </view>
   </view>
 
+  <view
+    class="quick-note-card {{quickNoteCreating ? 'quick-note-card--loading' : ''}} pressable fade-up"
+    bindtap="createQuickNote"
+    aria-label="快速笔记"
+  >
+    <view class="quick-note-card__icon">＋</view>
+    <view class="quick-note-card__content">
+      <text class="quick-note-card__title">{{quickNoteCreating ? '正在创建…' : '快速笔记'}}</text>
+      <text class="quick-note-card__description">不用整理，想到就马上记下来</text>
+    </view>
+    <text class="quick-note-card__arrow">→</text>
+  </view>
+
+  <block wx:if="{{articleEnabled}}">
   <view class="section-heading">
     <text class="section-heading__title">最近更新</text>
     <text class="section-heading__action" bindtap="openArticles">查看全部 →</text>
@@ -37,6 +51,7 @@
   <state-view
     wx:if="{{loading}}"
     type="loading"
+    loading="{{true}}"
     title="正在加载文章"
     description="稍等一下，新内容马上就来"
   ></state-view>
@@ -61,5 +76,6 @@
       bind:select="openArticle"
     ></article-card>
   </view>
+  </block>
   </view>
 </scroll-view>

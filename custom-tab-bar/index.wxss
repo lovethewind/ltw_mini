@@ -5,7 +5,7 @@
   left: 0;
   z-index: 200;
   box-sizing: border-box;
-  padding: 0 22rpx calc(18rpx + env(safe-area-inset-bottom));
+  padding: 0 22rpx env(safe-area-inset-bottom);
   pointer-events: none;
 }
 

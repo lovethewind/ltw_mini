@@ -9,8 +9,14 @@
   <state-view
     wx:if="{{loading}}"
     type="loading"
+    loading="{{true}}"
     title="正在打开文章"
     description="好内容值得稍等片刻"
+  ></state-view>
+  <state-view
+    wx:elif="{{!contentEnabled}}"
+    title="功能维护中"
+    description="当前版本暂未开放此功能"
   ></state-view>
   <state-view
     wx:elif="{{error}}"
@@ -26,12 +32,12 @@
       <image wx:if="{{article.displayCover}}" class="article-hero__image" src="{{article.displayCover}}" mode="aspectFill"></image>
       <view class="article-hero__overlay"></view>
       <view class="article-hero__content">
-        <text class="article-hero__title">{{article.title}}</text>
+        <text class="article-hero__title" user-select="{{true}}">{{article.title}}</text>
         <view class="article-hero__meta">
           <text>{{article.displayTime}}</text>
           <text wx:if="{{article.editTime && article.editTime !== article.createTime}}">更新 {{article.displayEditTime}}</text>
           <text>{{article.viewCount || 0}} 阅读</text>
-          <text>{{article.wordCount}} 字 · 约 {{article.readMinutes}} 分钟</text>
+          <text wx:if="{{contentEnabled}}">{{article.wordCount}} 字 · 约 {{article.readMinutes}} 分钟</text>
         </view>
         <view wx:if="{{article.displayOrigin || article.displayCategory || article.displayTags.length}}" class="article-hero__taxonomy">
           <text
@@ -71,6 +77,10 @@
 
     <view class="article-body">
       <towxml wx:if="{{hasContent}}" nodes="{{contentNodes}}"></towxml>
+      <view wx:elif="{{!contentEnabled}}" class="article-body__empty">
+        <text class="article-body__empty-title">正文暂未开放</text>
+        <text class="article-body__empty-description">当前客户端兼容性配置未启用正文展示</text>
+      </view>
       <view wx:else class="article-body__empty">
         <text class="article-body__empty-title">正文暂时为空</text>
         <text class="article-body__empty-description">作者还没有补充文章内容</text>

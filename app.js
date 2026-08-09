@@ -16,6 +16,8 @@ App({
   towxml: require('./towxml/index'),
   globalData: {
     apiBaseUrl: envVersion === 'develop' ? localApiBaseUrl : ONLINE_API_BASE_URL,
+    noteRefreshRequested: false,
+    profileRefreshRequested: false,
     ...themeState
   }
 })

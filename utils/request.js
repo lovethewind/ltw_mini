@@ -1,8 +1,10 @@
 const SUCCESS_CODE = 200
+const { getToken } = require('./auth')
 
 function request(options) {
   const app = getApp()
   const baseUrl = app.globalData.apiBaseUrl
+  const token = getToken()
 
   return new Promise((resolve, reject) => {
     wx.request({
@@ -12,6 +14,7 @@ function request(options) {
       timeout: options.timeout || 15000,
       header: {
         'content-type': 'application/json',
+        ...(token ? { web_token: token } : {}),
         ...(options.header || {})
       },
       success(response) {

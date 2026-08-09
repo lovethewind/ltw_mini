@@ -23,6 +23,26 @@
         "value": ".superpowers"
       },
       {
+        "type": "folder",
+        "value": ".git"
+      },
+      {
+        "type": "folder",
+        "value": ".gitnexus"
+      },
+      {
+        "type": "folder",
+        "value": ".idea"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      },
+      {
         "type": "file",
         "value": "project.private.config.json"
       },

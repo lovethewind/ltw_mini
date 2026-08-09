@@ -1,0 +1,24 @@
+# Codex Memory 索引
+
+- [2026-08-02 笔记入口、可靠性与多级文件夹](entries/2026-08-02-note-navigation-and-reliability.md)：笔记固定 Tab；覆盖保存、分页、多级目录、筛选布局及统一自绘弹层。
+- [2026-08-02 移除主动剪切板能力](entries/2026-08-02-remove-clipboard-api.md)：删除一键复制和剪切板 API，文章、笔记及 Towxml 正文改为长按选择文字。
+- [2026-08-08 笔记详情主题背景修复](entries/2026-08-08-note-detail-theme.md)：补齐 `--page-bg`，修复 Skyline 下暗色文字叠在浅色背景上的详情页主题错位。
+- [2026-08-08 笔记详情回到顶部](entries/2026-08-08-note-detail-back-top.md)：阅读模式滚动超过 600px 显示安全区浮动按钮，编辑模式隐藏并支持平滑返回顶部。
+- [2026-08-08 加载动画居中与放大](entries/2026-08-08-loading-spinner-alignment.md)：用 CSS 圆环替换字体字符 loading，修复真机视觉偏移并放大圆环。
+- [2026-08-08 首页笔记入口与 Hero 文案](entries/2026-08-08-home-quick-note.md)：首页 Hero 统一突出我的笔记，快速笔记卡片直接创建未分类笔记并进入编辑页。
+- [2026-08-08 全局加载图标统一](entries/2026-08-08-profile-loading-spinner.md)：所有页面显式传入 loading 状态，避免 Skyline/真机落到方形默认图标。
+- [2026-08-08 清空笔记回收站](entries/2026-08-08-empty-recycle-bin.md)：网页版和小程序通过统一批量接口清理回收站笔记、文件夹、历史版本及标签关系，并在操作前二次确认。
+- [2026-08-08 笔记列表局部更新与下拉刷新](entries/2026-08-08-note-local-mutations.md)：删除、恢复、置顶后直接更新本地列表，页面显示不再自动重复请求，仅初始化、下拉、搜索、切换范围和分页触发请求。
+- [2026-08-08 文件夹层级切换保持可见](entries/2026-08-08-folder-empty-child-display.md)：有子目录时只展示子目录，叶子目录及未分类时展示当前层级目录，方便横向切换。
+- [2026-08-09 小程序统一用户 token](entries/2026-08-09-unified-user-token.md)：笔记与账号密码登录共用 `ltw_token`，微信绑定不是笔记权限条件，退出登录会清理 token。
+- [2026-08-09 个人中心用户文案](entries/2026-08-09-profile-user-facing-copy.md)：隐藏 token、微信识别等技术性说明，避免用户和审核人员困惑。
+- [2026-08-09 个人中心登录状态](entries/2026-08-09-profile-login-status.md)：账号信息卡片显示当前是否已登录。
+- [2026-08-09 笔记筛选空状态](entries/2026-08-09-note-empty-state-scope.md)：置顶和回收站空列表显示对应范围名称，不再误显示“全部笔记”。
+- [2026-08-09 新建笔记返回刷新](entries/2026-08-09-note-create-return-refresh.md)：新建或编辑返回列表时设置刷新标记，确保刚保存的笔记可见。
+- [2026-08-09 笔记删除与回收站](entries/2026-08-09-note-delete-and-recycle.md)：删除操作标红并提示可从回收站找回，详情页删除后自动返回。
+- [2026-08-09 删除笔记不弹成功遮罩](entries/2026-08-09-note-delete-toast.md)：删除成功后直接更新列表或返回，不再显示遮挡视线的成功提示。
+- [2026-08-09 小程序登录引导文案](entries/2026-08-09-profile-login-copy.md)：登录提示以“点击”开头并整行红色强调。
+- [2026-08-09 登录密码不做长度校验](entries/2026-08-09-login-password-validation.md)：登录不再前端拦截密码长度，注册规则保持不变。
+- [2026-08-09 小程序源码包超限](entries/2026-08-09-mini-source-package-limit.md)：打包忽略 GitNexus 缓存、IDE 配置、文档和测试目录，避免超过 2MB 限制。
+- [2026-08-09 笔记列表摘要纯文本](entries/2026-08-09-note-preview-plain-text.md)：列表摘要清理 HTML、换行和 Markdown 标记，详情正文保持原渲染。
+- [2026-08-08 小程序直接注册账号](entries/2026-08-08-wechat-applet-register.md)：未绑定微信可在“我”页填写用户名、密码和选填昵称；用户名失焦校验重复，注册后笔记与个人中心各刷新一次。

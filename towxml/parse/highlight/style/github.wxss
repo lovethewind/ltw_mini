@@ -8,20 +8,20 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  color: #333;
-  background: #f8f8f8;
+  color: var(--h2w-code-highlight-text);
+  background: var(--h2w-code-highlight);
 }
 
 .h2w-light .hljs-comment,
 .h2w-light .hljs-quote {
-  color: #998;
+  color: var(--h2w-code-highlight-comment-color);
   font-style: italic;
 }
 
 .h2w-light .hljs-keyword,
 .h2w-light .hljs-selector-tag,
 .h2w-light .hljs-subst {
-  color: #333;
+  color: var(--h2w-code-highlight-keyword-color);
   font-weight: bold;
 }
 
@@ -30,18 +30,18 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 .h2w-light .hljs-variable,
 .h2w-light .hljs-template-variable,
 .h2w-light .hljs-tag .hljs-attr {
-  color: #008080;
+  color: var(--h2w-code-highlight-number-color);
 }
 
 .h2w-light .hljs-string,
 .h2w-light .hljs-doctag {
-  color: #d14;
+  color: var(--h2w-code-highlight-string-color);
 }
 
 .h2w-light .hljs-title,
 .h2w-light .hljs-section,
 .h2w-light .hljs-selector-id {
-  color: #900;
+  color: var(--h2w-code-highlight-title-color);
   font-weight: bold;
 }
 
@@ -51,43 +51,43 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 .h2w-light .hljs-type,
 .h2w-light .hljs-class .hljs-title {
-  color: #458;
+  color: var(--h2w-code-highlight-type-color);
   font-weight: bold;
 }
 
 .h2w-light .hljs-tag,
 .h2w-light .hljs-name,
 .h2w-light .hljs-attribute {
-  color: #000080;
+  color: var(--h2w-code-highlight-tag-color);
   font-weight: normal;
 }
 
 .h2w-light .hljs-regexp,
 .h2w-light .hljs-link {
-  color: #009926;
+  color: var(--h2w-code-highlight-regexp-color);
 }
 
 .h2w-light .hljs-symbol,
 .h2w-light .hljs-bullet {
-  color: #990073;
+  color: var(--h2w-code-highlight-symbol-color);
 }
 
 .h2w-light .hljs-built_in,
 .h2w-light .hljs-builtin-name {
-  color: #0086b3;
+  color: var(--h2w-code-highlight-built-in-color);
 }
 
 .h2w-light .hljs-meta {
-  color: #999;
+  color: var(--h2w-code-highlight-meta-color);
   font-weight: bold;
 }
 
 .h2w-light .hljs-deletion {
-  background: #fdd;
+  background: var(--h2w-code-highlight-deletion-bg);
 }
 
 .h2w-light .hljs-addition {
-  background: #dfd;
+  background: var(--h2w-code-highlight-addition-bg);
 }
 
 .h2w-light .hljs-emphasis {

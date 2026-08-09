@@ -1,10 +1,13 @@
 const { getArticleList, getCategories } = require('../../../utils/article')
 const { normalizeArticle } = require('../../../utils/format')
 const { getThemeState } = require('../../../utils/theme')
+const { isArticleContentCompatible } = require('../../../utils/runtime')
 
 Page({
   data: {
     ...getThemeState(),
+    articleEnabled: false,
+    compatibilityLoading: true,
     articles: [],
     categories: [],
     selectedCategoryId: '',
@@ -18,7 +21,10 @@ Page({
     error: ''
   },
 
-  onLoad() {
+  async onLoad() {
+    const articleEnabled = await isArticleContentCompatible()
+    this.setData({ articleEnabled, compatibilityLoading: false, loading: articleEnabled })
+    if (!articleEnabled) return
     this.loadCategories()
     this.loadArticles(true)
   },
@@ -31,15 +37,19 @@ Page({
   onShow() {
     this.setData(getThemeState())
     const tabBar = this.getTabBar && this.getTabBar()
-    if (tabBar) tabBar.setData({ selected: 1 })
+    if (tabBar) tabBar.setData({ selected: 2 })
   },
 
   onPullDownRefresh() {
+    if (!this.data.articleEnabled) {
+      wx.stopPullDownRefresh()
+      return
+    }
     this.loadArticles(true).finally(() => wx.stopPullDownRefresh())
   },
 
   onReachBottom() {
-    if (!this.data.loading && !this.data.loadingMore && this.data.hasMore) {
+    if (this.data.articleEnabled && !this.data.loading && !this.data.loadingMore && this.data.hasMore) {
       this.loadArticles(false)
     }
   },

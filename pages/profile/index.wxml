@@ -6,8 +6,9 @@
   <state-view
     wx:if="{{loading}}"
     type="loading"
-    title="正在识别微信账号"
-    description="仅用于查询当前微信关联的站内资料"
+    loading="{{true}}"
+    title="正在加载账号信息"
+    description="按当前登录方式查询站内资料"
   ></state-view>
   <view wx:elif="{{unbound}}" class="bind-guide fade-up">
     <view class="bind-guide__icon">
@@ -24,12 +25,40 @@
         </view>
         <text class="bind-route__path">账号绑定 → 微信 → 扫码完成绑定</text>
       </view>
-      <view class="bind-route">
+      <view class="bind-route bind-route--login pressable" bindtap="openLogin">
+        <view class="bind-route__heading">
+          <text class="bind-route__badge bind-route__badge--login">已有账号</text>
+          <text class="bind-route__title">小程序登录</text>
+        </view>
+        <text class="bind-route__path bind-route__path--login">点击填写用户名和密码，登录后查看笔记</text>
+      </view>
+      <view class="bind-route bind-route--new pressable" bindtap="openRegister">
         <view class="bind-route__heading">
           <text class="bind-route__badge bind-route__badge--new">新用户</text>
-          <text class="bind-route__title">前往网站登录页面</text>
+          <text class="bind-route__title">微信注册</text>
         </view>
-        <text class="bind-route__path">微信扫码登录 → 完善资料 → 注册并绑定</text>
+        <text class="bind-route__path bind-route__path--new">点击填写用户名和密码，完成注册</text>
+      </view>
+    </view>
+
+    <view wx:if="{{registerVisible}}" class="register-panel fade-up">
+      <view class="register-panel__heading">
+        <view>
+          <text class="register-panel__title">注册新账号</text>
+          <text class="register-panel__description">注册后当前微信会自动完成绑定</text>
+        </view>
+        <text class="register-panel__close" bindtap="closeRegister">关闭</text>
+      </view>
+      <view class="register-panel__field">
+        <input class="register-panel__input" value="{{registerForm.username}}" maxlength="20" placeholder="用户名（3-20个字符）" data-field="username" bindinput="updateRegisterField" bindblur="checkRegisterUsername" />
+        <text wx:if="{{registerUsernameChecking}}" class="register-panel__hint">正在检查用户名…</text>
+        <text wx:elif="{{registerUsernameExists}}" class="register-panel__hint register-panel__hint--error">该用户名已存在，请更换</text>
+      </view>
+      <input class="register-panel__input" value="{{registerForm.password}}" maxlength="30" password placeholder="密码（6-30个字符）" data-field="password" bindinput="updateRegisterField" />
+      <input class="register-panel__input" value="{{registerForm.nickname}}" maxlength="20" placeholder="昵称（选填，默认使用用户名）" data-field="nickname" bindinput="updateRegisterField" />
+      <view class="register-panel__actions">
+        <button class="register-panel__button register-panel__button--cancel" disabled="{{registerSubmitting}}" bindtap="closeRegister">取消</button>
+        <button class="register-panel__button register-panel__button--submit" loading="{{registerSubmitting}}" bindtap="submitRegister">{{registerSubmitting ? '注册中…' : '注册并进入笔记'}}</button>
       </view>
     </view>
 
@@ -61,7 +90,7 @@
             <text wx:if="{{user.gender === 1}}" class="profile-hero__gender profile-hero__gender--male" aria-label="男">♂</text>
             <text wx:elif="{{user.gender === 2}}" class="profile-hero__gender profile-hero__gender--female" aria-label="女">♀</text>
             <text wx:else class="profile-hero__gender profile-hero__gender--secret" aria-label="性别保密">○</text>
-            <text class="profile-hero__username">已关联微信</text>
+            <text class="profile-hero__username">{{loggedIn ? (wechatBound ? '账号已登录 · 微信已关联' : '账号已登录') : '已关联微信'}}</text>
           </view>
         </view>
       </view>
@@ -77,6 +106,10 @@
         <text class="info-row__value">{{user.id}}</text>
       </view>
       <view class="info-row">
+        <text class="info-row__label">登录状态</text>
+        <text class="info-row__value {{loggedIn ? 'info-row__value--success' : ''}}">{{loggedIn ? '已登录' : '未登录'}}</text>
+      </view>
+      <view class="info-row">
         <text class="info-row__label">UID</text>
         <text class="info-row__value">{{user.uid || '暂未分配'}}</text>
       </view>
@@ -86,7 +119,7 @@
       </view>
       <view class="info-row">
         <text class="info-row__label">微信状态</text>
-        <text class="info-row__value info-row__value--success">已关联</text>
+        <text class="info-row__value {{wechatBound ? 'info-row__value--success' : ''}}">{{wechatBound ? '已关联' : '未关联'}}</text>
       </view>
       <view class="info-row">
         <text class="info-row__label">所在地区</text>
@@ -94,7 +127,30 @@
       </view>
     </view>
 
-    <view class="privacy-tip">小程序不会保存你的微信登录凭证，也不会在这里修改账号资料。</view>
+      <view class="profile-actions">
+      <button wx:if="{{loggedIn}}" class="profile-actions__button profile-actions__button--danger pressable" bindtap="logout">退出登录</button>
+      <view wx:else class="profile-actions__group">
+        <button class="profile-actions__button pressable" bindtap="openLogin">账号登录</button>
+        <button wx:if="{{wechatBound}}" class="profile-actions__button profile-actions__button--wechat pressable" loading="{{wechatLoginSubmitting}}" bindtap="wechatLogin">{{wechatLoginSubmitting ? '微信登录中…' : '微信登录'}}</button>
+      </view>
+    </view>
+
+  </view>
+
+  <view wx:if="{{loginVisible}}" class="register-panel login-panel fade-up">
+    <view class="register-panel__heading">
+      <view>
+        <text class="register-panel__title">账号登录</text>
+        <text class="register-panel__description">登录后可使用当前账号的私人笔记</text>
+      </view>
+      <text class="register-panel__close" bindtap="closeLogin">关闭</text>
+    </view>
+    <input class="register-panel__input" value="{{loginForm.username}}" maxlength="20" placeholder="用户名（3-20个字符）" data-field="username" bindinput="updateLoginField" />
+    <input class="register-panel__input" value="{{loginForm.password}}" password placeholder="密码" data-field="password" bindinput="updateLoginField" />
+    <view class="register-panel__actions">
+      <button class="register-panel__button register-panel__button--cancel" disabled="{{loginSubmitting}}" bindtap="closeLogin">取消</button>
+      <button class="register-panel__button register-panel__button--submit" loading="{{loginSubmitting}}" bindtap="submitLogin">{{loginSubmitting ? '登录中…' : '登录'}}</button>
+    </view>
   </view>
 
   <view wx:if="{{!loading && !error}}" class="website-card fade-up">

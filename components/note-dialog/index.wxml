@@ -1,0 +1,65 @@
+<view wx:if="{{visible}}" class="dialog-backdrop {{mode === 'action' || mode === 'prompt' || mode === 'confirm' || mode === 'preview' ? 'dialog-backdrop--center' : ''}}" bindtap="close">
+  <view class="dialog-panel {{mode === 'action' || mode === 'prompt' || mode === 'confirm' || mode === 'preview' ? 'dialog-panel--center' : ''}}" catchtap="stopPropagation">
+    <view wx:if="{{mode === 'select'}}" class="dialog-handle"></view>
+    <view class="dialog-heading">
+      <text class="dialog-title">{{title}}</text>
+      <text wx:if="{{description && mode !== 'confirm' && mode !== 'preview'}}" class="dialog-description">{{description}}</text>
+    </view>
+
+    <input
+      wx:if="{{mode === 'prompt'}}"
+      class="dialog-input"
+      value="{{inputValue}}"
+      placeholder="{{placeholder}}"
+      maxlength="100"
+      focus
+      bindinput="updateInput"
+      bindconfirm="confirm"
+    />
+
+    <view wx:if="{{mode === 'action'}}" class="dialog-options dialog-options--action">
+      <view
+        wx:for="{{renderItems}}"
+        wx:key="label"
+        class="dialog-option {{item.selected ? 'dialog-option--selected' : ''}} {{item.danger ? 'dialog-option--danger' : ''}}"
+        data-index="{{index}}"
+        style="padding-left: {{22 + (item.depth || 0) * 32}}rpx;"
+        bindtap="selectOption"
+      >
+        <text wx:if="{{item.icon}}" class="dialog-option__icon">{{item.icon}}</text>
+        <view class="dialog-option__main">
+          <text class="dialog-option__label">{{item.label}}</text>
+          <text wx:if="{{item.description}}" class="dialog-option__description">{{item.description}}</text>
+        </view>
+        <text wx:if="{{item.selected}}" class="dialog-option__check">✓</text>
+      </view>
+    </view>
+
+    <scroll-view wx:if="{{mode === 'select'}}" class="dialog-options dialog-options--select" scroll-y enhanced show-scrollbar="{{false}}">
+      <view
+        wx:for="{{renderItems}}"
+        wx:key="label"
+        class="dialog-option {{item.selected ? 'dialog-option--selected' : ''}}"
+        data-index="{{index}}"
+        style="padding-left: {{22 + (item.depth || 0) * 32}}rpx;"
+        bindtap="selectOption"
+      >
+        <text wx:if="{{item.icon}}" class="dialog-option__icon">{{item.icon}}</text>
+        <view class="dialog-option__main">
+          <text class="dialog-option__label">{{item.label}}</text>
+          <text wx:if="{{item.description}}" class="dialog-option__description">{{item.description}}</text>
+        </view>
+        <text wx:if="{{item.selected}}" class="dialog-option__check">✓</text>
+        <text wx:else class="dialog-option__arrow">›</text>
+      </view>
+    </scroll-view>
+
+    <text wx:if="{{mode === 'confirm' || mode === 'preview'}}" class="dialog-content">{{description}}</text>
+
+    <view wx:if="{{mode === 'prompt' || mode === 'confirm' || mode === 'preview'}}" class="dialog-actions">
+      <button wx:if="{{mode !== 'preview'}}" class="dialog-button dialog-button--cancel" bindtap="close">取消</button>
+      <button class="dialog-button {{danger ? 'dialog-button--danger' : 'dialog-button--primary'}}" bindtap="confirm">{{mode === 'preview' ? '关闭' : confirmText}}</button>
+    </view>
+    <button wx:if="{{mode === 'action' || mode === 'select'}}" class="dialog-cancel" bindtap="close">取消</button>
+  </view>
+</view>

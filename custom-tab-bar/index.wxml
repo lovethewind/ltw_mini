@@ -3,6 +3,7 @@
     <view
       wx:for="{{tabs}}"
       wx:key="path"
+      wx:if="{{!item.requiresArticle || articleEnabled}}"
       class="tab-item {{selected === index ? 'tab-item--selected' : ''}}"
       data-index="{{index}}"
       bindtap="switchTab"

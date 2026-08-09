@@ -1,6 +1,6 @@
 <view class="state-view state-view--{{type}} fade-up">
   <view class="state-view__icon">
-    <text wx:if="{{type === 'loading'}}">◌</text>
+    <image wx:if="{{loading || type === 'loading'}}" class="state-view__spinner" src="/images/loading-spinner.svg" mode="aspectFit" aria-label="加载中"></image>
     <text wx:elif="{{type === 'success'}}">✓</text>
     <text wx:elif="{{type === 'error'}}">!</text>
     <text wx:else>⌁</text>

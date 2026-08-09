@@ -1,12 +1,16 @@
 const { getArticleList } = require('../../utils/article')
 const { normalizeArticle } = require('../../utils/format')
+const { createNote } = require('../../utils/note')
 const { extractScene, normalizeScene } = require('../../utils/scan')
 const { getThemeState } = require('../../utils/theme')
+const { isArticleContentCompatible } = require('../../utils/runtime')
 
 Page({
   data: {
     ...getThemeState(),
     articles: [],
+    articleEnabled: false,
+    quickNoteCreating: false,
     loading: true,
     error: ''
   },
@@ -18,7 +22,17 @@ Page({
         url: `/pages/scan/confirm/index?scene=${encodeURIComponent(scene)}`
       })
     }
-    this.loadArticles()
+    this.loadHomeContent()
+  },
+
+  async loadHomeContent() {
+    const articleEnabled = await isArticleContentCompatible()
+    this.setData({ articleEnabled })
+    if (articleEnabled) {
+      await this.loadArticles()
+      return
+    }
+    this.setData({ articles: [], loading: false, error: '' })
   },
 
   /**
@@ -58,6 +72,42 @@ Page({
     wx.switchTab({
       url: '/pages/article/list/index'
     })
+  },
+
+  /**
+   * 切换到私人笔记页。
+   *
+   * @returns {void}
+   */
+  openNotes() {
+    wx.switchTab({
+      url: '/pages/note/index'
+    })
+  },
+
+  /**
+   * 从首页直接创建一篇空白笔记并进入编辑页。
+   *
+   * @returns {Promise<void>} 创建并打开笔记的异步任务。
+   */
+  async createQuickNote() {
+    if (this.data.quickNoteCreating) return
+    this.setData({ quickNoteCreating: true })
+    try {
+      const noteId = await createNote()
+      wx.navigateTo({ url: `/pages/note/edit/index?id=${noteId}&created=1` })
+    } catch (error) {
+      if ([10007, 10010].includes(Number(error.code))) {
+        wx.switchTab({
+          url: '/pages/profile/index',
+          fail: () => wx.reLaunch({ url: '/pages/profile/index' })
+        })
+        return
+      }
+      wx.showToast({ title: error.message || '新建笔记失败', icon: 'none' })
+    } finally {
+      this.setData({ quickNoteCreating: false })
+    }
   },
 
   scanCode() {

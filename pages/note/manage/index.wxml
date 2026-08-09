@@ -1,0 +1,48 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<view class="resource-page theme-{{theme}}">
+  <liquid-header title="整理笔记" show-back="{{true}}"></liquid-header>
+  <view class="page-shell resource-shell">
+    <view class="resource-toolbar">
+      <view class="resource-heading fade-up">
+        <text class="resource-heading__eyebrow">ORGANIZE</text>
+        <view class="resource-heading__main">
+          <text class="resource-heading__title">分类管理</text>
+          <button class="resource-create pressable" bindtap="createResource">＋ 新建</button>
+        </view>
+      </view>
+      <view class="resource-tabs fade-up">
+        <view class="resource-tab {{tab === 'folder' ? 'resource-tab--active' : ''}}" data-tab="folder" bindtap="selectTab">文件夹 {{folders.length}}</view>
+        <view class="resource-tab {{tab === 'tag' ? 'resource-tab--active' : ''}}" data-tab="tag" bindtap="selectTab">标签 {{tags.length}}</view>
+      </view>
+    </view>
+
+    <scroll-view class="resource-list-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <state-view wx:if="{{loading}}" type="loading" loading="{{true}}" title="正在加载分类" description="请稍候"></state-view>
+      <state-view wx:elif="{{error}}" type="error" title="分类加载失败" description="{{error}}" action-text="重新加载" bind:action="loadResources"></state-view>
+      <view wx:else class="resource-list fade-up">
+        <view wx:for="{{tab === 'folder' ? folders : tags}}" wx:key="id" class="resource-card">
+          <view class="resource-card__icon">{{tab === 'folder' ? '▰' : '#'}}</view>
+          <text class="resource-card__name">{{item.name}}</text>
+          <button class="resource-card__more" data-type="{{tab}}" data-id="{{item.id}}" bindtap="showResourceActions" aria-label="更多操作">
+            <view class="resource-card__more-dots"><view class="resource-card__more-dot"></view><view class="resource-card__more-dot"></view><view class="resource-card__more-dot"></view></view>
+          </button>
+        </view>
+        <text wx:if="{{tab === 'folder' ? !folders.length : !tags.length}}" class="resource-empty">还没有{{tab === 'folder' ? '文件夹' : '标签'}}</text>
+      </view>
+    </scroll-view>
+  </view>
+  <note-dialog
+    visible="{{dialog.visible}}"
+    mode="{{dialog.mode}}"
+    title="{{dialog.title}}"
+    description="{{dialog.description}}"
+    value="{{dialog.value}}"
+    placeholder="{{dialog.placeholder}}"
+    confirm-text="{{dialog.confirmText}}"
+    danger="{{dialog.danger}}"
+    items-json="{{dialog.itemsJson}}"
+    bind:close="closeDialog"
+    bind:confirm="submitDialog"
+    bind:select="submitDialog"
+  ></note-dialog>
+</view>

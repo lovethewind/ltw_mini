@@ -1,68 +1,63 @@
 /*正文样式*/
 .h2w-light {
-  color:#233247;
-  background-color:transparent;
+  color: var(--h2w-text);
+  background-color: transparent;
 }
 
 /**标题**/
 .h2w-light .h2w__h1,
 .h2w-light .h2w__h2 {
-    border-color:#eee;
+    border-color: var(--h2w-border);
 }
 
 
 /**表格**/
 .h2w-light .h2w__thead .h2w__tr {
-    background-color:#f6f8fa;
+    background-color: var(--h2w-thead-bg);
 }
 .h2w-light .h2w__table .h2w__tr:nth-child(2n){
-    background-color:#fbfcfd;
+    background-color: var(--h2w-stripe-bg);
 }
 .h2w-light .h2w__th,
 .h2w-light .h2w__td {
-    border-color:#dfe2e5;
+    border-color: var(--h2w-cell-border);
 }
 
 
 /**代码块**/
 .h2w-light .h2w__pre {
-    background-color:#f4f7fb;
-    border-color:#dce5f0;
+    background-color: var(--h2w-pre-bg);
+    border-color: var(--h2w-pre-border);
 }
 
 .h2w-light .h2w__code {
-    background-color:#f6f8fa;
-    border-color:#eaedf0;
-}
-
-.h2w-light .h2w__copyButton {
-    color:#3977c6;
-    background-color:#e8f2ff;
+    background-color: var(--h2w-code-bg);
+    border-color: var(--h2w-code-border);
 }
 
 
 /**块元素**/
 .h2w-light .h2w__blockquote {
-    border-left-color:#dfe2e5;
-    background-color:#f5f8fc;
+    border-left-color: var(--h2w-blockquote-border);
+    background-color: var(--h2w-blockquote-bg);
 }
 
 /**内连元素**/
 .h2w-light .h2w__a {
-    color:#1aad16; border-color:#b9d9b8;
+    color: var(--h2w-link-color); border-color: var(--h2w-link-border);
 }
 
 .h2w-light .h2w__hr {
-    background-color:#eee;
+    background-color: var(--h2w-hr-bg);
 }
 
 .h2w-light .h2w__mark {
-    background:yellow;
-    color:black;
+    background: var(--h2w-mark-bg);
+    color: var(--h2w-mark-color);
 }
 
 .h2w-light .h2w__lineNum {
-    color:#ccc;
+    color: var(--h2w-linenum-color);
 }
 
 /**代码高亮样式**/

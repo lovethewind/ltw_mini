@@ -1,0 +1,164 @@
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<view class="note-page theme-{{theme}}">
+  <liquid-header title="私人笔记"></liquid-header>
+  <view class="page-shell note-shell">
+    <view class="note-toolbar">
+      <view class="note-heading fade-up">
+        <view>
+          <text class="note-heading__eyebrow">PRIVATE SPACE</text>
+          <text class="note-heading__title">我的笔记</text>
+        </view>
+        <view class="note-heading__actions">
+          <button class="note-manage pressable" disabled="{{noteAccessDenied}}" bindtap="openManager">整理</button>
+          <button class="note-create pressable" disabled="{{noteAccessDenied}}" bindtap="createNote">＋ 新建</button>
+        </view>
+      </view>
+
+      <view class="note-search fade-up">
+        <text class="note-search__icon">⌕</text>
+        <input value="{{keyword}}" disabled="{{noteAccessDenied}}" placeholder="搜索当前文件夹" confirm-type="search" bindinput="updateKeyword" bindconfirm="searchNotes" />
+        <text wx:if="{{keyword}}" class="note-search__action" bindtap="searchNotes">搜索</text>
+      </view>
+
+      <view class="note-scopes fade-up">
+        <view class="note-scope-list">
+          <view wx:for="{{scopes}}" wx:key="key" class="note-scope {{scope === item.key ? 'note-scope--active' : ''}} {{noteAccessDenied ? 'note-scope--disabled' : ''}}" data-scope="{{item.key}}" bindtap="selectScope"><text>{{item.label}}</text><text class="note-scope__count">{{item.count}}</text></view>
+        </view>
+        <view wx:if="{{folderNavigationVisible}}" class="folder-browser__actions">
+          <button class="folder-browser__button" disabled="{{noteAccessDenied}}" bindtap="openFolderSheet">切换</button>
+          <button class="folder-browser__button folder-browser__button--primary" disabled="{{noteAccessDenied}}" bindtap="createChildFolder">＋ 文件夹</button>
+        </view>
+        <view wx:elif="{{scope === 'recycle' && (total || recycleFolderCount)}}" class="folder-browser__actions">
+          <button class="folder-browser__button folder-browser__button--danger" bindtap="clearRecycleBin">清空</button>
+        </view>
+      </view>
+    </view>
+
+    <scroll-view
+      class="note-list-scroll"
+      scroll-y
+      enhanced
+      show-scrollbar="{{false}}"
+      bindscrolltolower="loadMoreNotes"
+      lower-threshold="120"
+      refresher-enabled="{{true}}"
+      refresher-triggered="{{refreshing}}"
+      bindrefresherrefresh="handleRefresh"
+    >
+      <view wx:if="{{folderNavigationVisible}}" class="folder-browser fade-up">
+        <scroll-view
+          class="folder-strip"
+          scroll-x
+          enhanced
+          show-scrollbar="{{false}}"
+        >
+          <view class="folder-strip__items">
+            <block wx:if="{{currentFolderId === ''}}">
+              <view class="folder-card pressable" data-id="unfiled" bindtap="selectFolder">
+                <text class="folder-card__icon">▱</text>
+                <view class="folder-card__content"><text class="folder-card__name">未分类</text><text class="folder-card__hint">没有归档的笔记</text></view>
+                <text class="folder-card__arrow">›</text>
+              </view>
+              <view wx:for="{{childFolders}}" wx:key="id" class="folder-card pressable" data-id="{{item.id}}" bindtap="selectFolder">
+                <text class="folder-card__icon">▰</text>
+                <view class="folder-card__content"><text class="folder-card__name">{{item.name}}</text><text class="folder-card__hint">打开子文件夹</text></view>
+                <text class="folder-card__arrow">›</text>
+              </view>
+            </block>
+            <block wx:elif="{{childFolders.length}}">
+              <view wx:for="{{childFolders}}" wx:key="id" class="folder-card pressable" data-id="{{item.id}}" bindtap="selectFolder">
+                <text class="folder-card__icon">▰</text>
+                <view class="folder-card__content"><text class="folder-card__name">{{item.name}}</text><text class="folder-card__hint">打开子文件夹</text></view>
+                <text class="folder-card__arrow">›</text>
+              </view>
+            </block>
+            <block wx:else>
+              <view class="folder-card folder-card--current">
+                <text class="folder-card__icon">▰</text>
+                <view class="folder-card__content"><text class="folder-card__name">{{currentFolderName}}</text><text class="folder-card__hint">当前文件夹 · 没有子文件夹</text></view>
+                <text class="folder-card__selected">当前</text>
+              </view>
+              <view wx:for="{{siblingFolders}}" wx:key="id" class="folder-card pressable" data-id="{{item.id}}" bindtap="selectFolder">
+                <text class="folder-card__icon">▰</text>
+                <view class="folder-card__content"><text class="folder-card__name">{{item.name}}</text><text class="folder-card__hint">同级文件夹</text></view>
+                <text class="folder-card__arrow">›</text>
+              </view>
+            </block>
+          </view>
+        </scroll-view>
+      </view>
+
+      <state-view wx:if="{{loading}}" type="loading" loading="{{true}}" title="正在同步笔记" description="只加载当前账号的私人记录"></state-view>
+      <state-view wx:elif="{{error}}" type="error" title="笔记加载失败" description="{{error}}" action-text="{{errorActionText}}" bindaction="handleErrorAction"></state-view>
+      <state-view
+        wx:elif="{{!notes.length}}"
+        title="{{scope === 'pinned' ? '置顶' : scope === 'recycle' ? '回收站' : currentFolderName}}暂无内容"
+        description="{{scope === 'recycle' ? '移入回收站的笔记会显示在这里' : '点击右上角新建，记录第一个想法'}}"
+      ></state-view>
+
+      <view wx:else class="note-list fade-up">
+        <view wx:for="{{notes}}" wx:key="id" class="note-card pressable" data-id="{{item.id}}" bindtap="openNote">
+          <view class="note-card__top">
+            <view class="note-card__title-row">
+              <text wx:if="{{item.isPinned}}" class="note-card__pin">置顶</text>
+              <text class="note-card__title">{{item.title || '无标题笔记'}}</text>
+            </view>
+            <button class="note-card__more" data-id="{{item.id}}" catchtap="showNoteActions" aria-label="更多操作">
+              <view class="note-card__more-dots"><view class="note-card__more-dot"></view><view class="note-card__more-dot"></view><view class="note-card__more-dot"></view></view>
+            </button>
+          </view>
+          <text wx:if="{{item.contentPreview}}" class="note-card__preview">{{item.contentPreview}}</text>
+          <view class="note-card__meta">
+            <text>{{item.folderName}}</text><text>{{item.displayTime}}</text>
+          </view>
+          <view wx:if="{{item.previewTags.length}}" class="note-card__tags">
+            <text wx:for="{{item.previewTags}}" wx:key="id">#{{item.name}}</text>
+          </view>
+        </view>
+        <text wx:if="{{loadingMore}}" class="note-list__footer">正在加载更多…</text>
+        <text wx:elif="{{notes.length && !hasMore}}" class="note-list__footer">已经到底了</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{folderSheetVisible}}" class="folder-panel-backdrop" bindtap="closeFolderSheet"></view>
+  <view wx:if="{{folderSheetVisible}}" class="folder-panel">
+    <view class="folder-panel__handle"></view>
+    <view class="folder-panel__heading">
+      <view><text class="folder-panel__title">切换文件夹</text><text class="folder-panel__description">按层级展示全部目录</text></view>
+      <text class="folder-panel__close" bindtap="closeFolderSheet">关闭</text>
+    </view>
+    <scroll-view class="folder-tree-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="folder-tree">
+        <view
+          wx:for="{{folderTree}}"
+          wx:key="id"
+          class="folder-tree__item {{item.selected ? 'folder-tree__item--selected' : ''}}"
+          style="padding-left: {{24 + item.indent}}rpx;"
+          data-id="{{item.id}}"
+          bindtap="selectFolder"
+        >
+          <text class="folder-tree__branch">{{item.virtual ? (item.id === 'unfiled' ? '▱' : '⌂') : '▰'}}</text>
+          <text class="folder-tree__name">{{item.name}}</text>
+          <text wx:if="{{item.selected}}" class="folder-tree__selected">当前</text>
+          <text wx:else class="folder-tree__arrow">›</text>
+        </view>
+      </view>
+    </scroll-view>
+    <button class="folder-panel__create pressable" disabled="{{noteAccessDenied}}" bindtap="createChildFolder">＋ 在当前位置新建文件夹</button>
+  </view>
+  <note-dialog
+    visible="{{dialog.visible}}"
+    mode="{{dialog.mode}}"
+    title="{{dialog.title}}"
+    description="{{dialog.description}}"
+    value="{{dialog.value}}"
+    placeholder="{{dialog.placeholder}}"
+    confirm-text="{{dialog.confirmText}}"
+    danger="{{dialog.danger}}"
+    items-json="{{dialog.itemsJson}}"
+    bind:close="closeDialog"
+    bind:confirm="submitDialog"
+    bind:select="submitDialog"
+  ></note-dialog>
+</view>
