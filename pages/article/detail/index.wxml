@@ -1,4 +1,4 @@
-<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#f7faff'}};"></page-meta>
 <view wx:if="{{article}}" class="reading-progress" aria-hidden="true">
   <view class="reading-progress__value" style="transform: scaleX({{readingProgress / 100}});"></view>
 </view>

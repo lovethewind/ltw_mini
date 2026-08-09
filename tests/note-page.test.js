@@ -13,6 +13,10 @@ const WECHAT_UTIL_PATH = path.join(PROJECT_ROOT, "utils/wechat.js")
 const THEME_UTIL_PATH = path.join(PROJECT_ROOT, "utils/theme.js")
 const STATE_VIEW_TEMPLATE_PATH = path.join(PROJECT_ROOT, "components/state-view/state-view.wxml")
 const STATE_VIEW_STYLE_PATH = path.join(PROJECT_ROOT, "components/state-view/state-view.wxss")
+const TOWXML_PARSE_PATH = path.join(PROJECT_ROOT, "towxml/index.js")
+const TOWXML_STYLE_PATH = path.join(PROJECT_ROOT, "towxml/style/main.wxss")
+const TOWXML_DECODE_STYLE_PATH = path.join(PROJECT_ROOT, "towxml/decode.wxss")
+const TOWXML_DECODE_SCRIPT_PATH = path.join(PROJECT_ROOT, "towxml/decode.js")
 
 /**
  * 创建支持小程序 setData 路径语法的页面实例。
@@ -132,6 +136,70 @@ test("加载状态使用居中且更大的 CSS 圆环动画", () => {
   assert.match(fs.readFileSync(path.join(PROJECT_ROOT, "images/loading-spinner.svg"), "utf8"), /<circle[^>]*r="18"/)
 })
 
+test("小程序富文本清理块间格式换行并修复无序列表布局", () => {
+  delete require.cache[TOWXML_PARSE_PATH]
+  const towxml = require(TOWXML_PARSE_PATH)
+  const nodes = towxml(
+    "# 标题\n\n正文\n\n- **第一项**：加粗\n- 第二项",
+    "markdown",
+    { theme: "light" }
+  )
+  const textNodes = []
+  const walk = (node) => {
+    if (!node) return
+    if (node.type === "text") textNodes.push(node.text)
+    ;(node.child || []).forEach(walk)
+  }
+  walk(nodes)
+  assert.equal(textNodes.some((text) => /^[\t\r\n ]*[\r\n][\t\r\n ]*$/.test(text || "")), false)
+  const list = nodes.child.find((node) => node.attr && node.attr.class === "h2w__ul")
+  assert.equal(list.child[0].child[0].attr.class, "h2w__strong")
+  assert.equal(list.child[0].child[0].child[0].text, "• 第一项")
+  assert.equal(list.child[1].child[0].text, "• 第二项")
+  assert.match(list.child[0].attr.style, /display:block/)
+
+  const orderedList = towxml(
+    "1. **第一项**：加粗\n2. 第二项",
+    "markdown",
+    { theme: "light" }
+  ).child.find((node) => node.attr && node.attr.class === "h2w__ol")
+  assert.equal(orderedList.child[0].child[0].attr.class, "h2w__strong")
+  assert.equal(orderedList.child[0].child[0].child[0].text, "1. 第一项")
+  assert.equal(orderedList.child[1].child[0].text, "2. 第二项")
+
+  const codeNodes = towxml("```js\nconst value = 1\n```", "markdown", { theme: "light", highlightCode: true })
+  const codeClasses = []
+  const codeTexts = []
+  const collectClasses = (node) => {
+    if (!node) return
+    if (node.type === "text") codeTexts.push(node.text)
+    if (node.attr && node.attr.class) codeClasses.push(node.attr.class)
+    ;(node.child || []).forEach(collectClasses)
+  }
+  collectClasses(codeNodes)
+  assert.ok(codeClasses.includes("h2w__br"))
+  const spacedCode = towxml("```\nsave 900 1    # comment\n```", "markdown", { theme: "light" })
+  const spacedCodeTexts = []
+  const collectSpacedCode = (node) => {
+    if (!node) return
+    if (node.type === "text") spacedCodeTexts.push(node.text)
+    ;(node.child || []).forEach(collectSpacedCode)
+  }
+  collectSpacedCode(spacedCode)
+  assert.ok(spacedCodeTexts.join("").includes("save\u00a0900\u00a01\u00a0\u00a0\u00a0\u00a0#"))
+
+  const style = fs.readFileSync(TOWXML_STYLE_PATH, "utf8")
+  assert.match(style, /\.h2w__li\s*\{[\s\S]*display:\s*block/)
+  assert.match(style, /\.h2w__ol\s*\{[\s\S]*list-style:\s*none/)
+  assert.match(style, /\.h2w__lineNum\s+\.h2w__li\s*\{[\s\S]*display:\s*block/)
+  assert.match(style, /\.h2w__table\s*\{[\s\S]*border:\s*1rpx\s+solid\s+var\(--h2w-cell-border\)/)
+  assert.match(style, /\.h2w__th,[\s\S]*\.h2w__td\s*\{[\s\S]*border:\s*1rpx\s+solid\s+var\(--h2w-cell-border\)/)
+  const decodeStyle = fs.readFileSync(TOWXML_DECODE_STYLE_PATH, "utf8")
+  const decodeScript = fs.readFileSync(TOWXML_DECODE_SCRIPT_PATH, "utf8")
+  assert.match(decodeStyle, /@import\s+['"]\.\/style\/main\.wxss['"]/)
+  assert.match(decodeScript, /styleIsolation:\s*['"]shared['"]/)
+})
+
 test("保存失败时完成操作保持编辑状态", async () => {
   const page = loadPage(NOTE_EDIT_PAGE_PATH, {
     updateNote: async () => { throw new Error("保存失败") }
@@ -160,6 +228,39 @@ test("空笔记正文不渲染占位文字", () => {
   instance.onShow()
 
   assert.deepEqual(instance.data.contentNodes, {})
+})
+
+test("编辑器在正文就绪后挂载并使用独立值承接长正文", () => {
+  const template = fs.readFileSync(NOTE_EDIT_PAGE_PATH.replace(/\.js$/, ".wxml"), "utf8")
+  const source = fs.readFileSync(NOTE_EDIT_PAGE_PATH, "utf8")
+  assert.match(template, /class="note-content"[\s\S]*maxlength="100000"/)
+  assert.match(template, /wx:if="\{\{editorReady\}\}"[\s\S]*value="\{\{editorValue\}\}"/)
+  assert.match(source, /editorReady:\s*false/)
+  assert.match(source, /editorValue:\s*editing \? normalizedNote\.content : ''/)
+  assert.match(source, /this\.setData\(\{ editorReady: true \}, \(\) => this\.syncEditorValue\(normalizedNote\.content\)\)/)
+  assert.match(source, /syncEditorValue\(content, cursorPosition = null\)/)
+  assert.match(source, /this\.setData\(\{ cursorPosition: targetCursor \}/)
+})
+
+test("进入编辑模式时把完整正文同步到原生编辑框", () => {
+  const page = loadPage(NOTE_EDIT_PAGE_PATH, {})
+  const instance = createPageInstance(page)
+  instance.data.note = { id: 1, title: "长正文", content: "a".repeat(240), tagList: [] }
+
+  instance.enterEditMode()
+
+  assert.equal(instance.data.editorReady, true)
+  assert.equal(instance.data.editorValue.length, 240)
+  assert.equal(instance.data.note.content.length, 240)
+  assert.equal(instance.data.cursorPosition, 0)
+})
+
+test("编辑模式只保留正文编辑区滚动，避免页面出现第二条长滚动条", () => {
+  const style = fs.readFileSync(path.join(PROJECT_ROOT, "pages/note/edit/index.wxss"), "utf8")
+
+  assert.match(style, /\.note-edit-shell--editing\s*\{[^}]*height:calc\(100vh - 88px\)[^}]*min-height:0[^}]*overflow:hidden/)
+  assert.match(style, /\.note-edit-shell--editing \.note-editor\s*\{[^}]*display:flex[^}]*flex-direction:column/)
+  assert.match(style, /\.note-edit-shell--editing \.note-content\s*\{[^}]*min-height:0[^}]*flex:1[^}]*overflow-y:auto/)
 })
 
 test("笔记详情滚动后显示回到顶部并支持平滑返回", () => {

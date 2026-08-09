@@ -1,4 +1,4 @@
-<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#eef6ff'}};"></page-meta>
+<page-meta page-style="background-color: {{theme === 'dark' ? '#0b1220' : '#f7faff'}};"></page-meta>
 <view class="note-edit-page theme-{{theme}}">
   <liquid-header title="{{editing ? '编辑笔记' : '笔记详情'}}" show-back="{{true}}"></liquid-header>
   <view class="page-shell note-edit-shell {{editing ? 'note-edit-shell--editing' : ''}}">
@@ -47,9 +47,10 @@
         </view>
       </scroll-view>
       <textarea
+        wx:if="{{editorReady}}"
         class="note-content"
-        value="{{note.content}}"
-        maxlength="-1"
+        value="{{editorValue}}"
+        maxlength="100000"
         placeholder="开始记录…"
         cursor-spacing="120"
         cursor="{{cursorPosition}}"

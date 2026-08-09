@@ -1,0 +1,4 @@
+/** decode 子组件内部也需要完整的 Towxml 样式，否则父级组件样式无法稳定穿透。 */
+@import './style/main.wxss';
+@import './style/theme/light.wxss';
+@import './style/theme/dark.wxss';

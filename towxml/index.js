@@ -87,12 +87,9 @@ function convertCodeTextNodes(text,state) {
             return;
         };
         if (!part) return;
-        let content = part;
-        if (state.lineStart) {
-            content = content.replace(/^[ \t]+/,whitespace => {
-                return whitespace.replace(/\t/g,'    ').replace(/ /g,'\u00a0');
-            });
-        };
+        // 小程序 text 会折叠普通空格，代码行中间的空格（如 `save 900 1`）
+        // 也必须转换为 nbsp；制表符按四个空格处理，保持缩进和对齐。
+        const content = part.replace(/\t/g,'    ').replace(/ /g,'\u00a0');
         nodes.push({type:'text',text:content});
         state.lineStart = false;
     });
@@ -136,7 +133,7 @@ function normalizeHtmlCodeNode(node,state) {
  * @param {Record<string, any>} option Towxml 渲染选项。
  * @returns {void}
  */
-function normalizeHtmlCodeBlocks(node,option) {
+function normalizeHtmlCodeBlocks(node,option,rehighlight = true) {
     if (!node || !Array.isArray(node.child)) return;
     const className = node.attr ? String(node.attr.class || '') : '';
     if (className.includes('h2w__pre')) {
@@ -145,13 +142,13 @@ function normalizeHtmlCodeBlocks(node,option) {
             return childClassName.includes('h2w__code');
         });
         if (codeNode) {
-            if (option.highlightCode) {
+            if (rehighlight && option.highlightCode) {
                 highlightHtmlCodeNode(node,codeNode,option);
             };
             normalizeHtmlCodeNode(codeNode,{lineStart:true});
         };
     };
-    node.child.forEach(child => normalizeHtmlCodeBlocks(child,option));
+    node.child.forEach(child => normalizeHtmlCodeBlocks(child,option,rehighlight));
 }
 
 /**
@@ -176,9 +173,9 @@ function towxml(str,type,option) {
             throw new Error('Invalid type, only markdown and html are supported');
         break;
     };
-    if(type === 'html'){
-        normalizeHtmlCodeBlocks(result,option);
-    };
+    // Markdown 已经在解析阶段完成高亮，HTML 则按选项重新高亮；两者都需要
+    // 统一转换代码块中的空格，避免小程序 text 折叠代码格式。
+    normalizeHtmlCodeBlocks(result,option,type === 'html');
     return result;
 }
 

@@ -110,6 +110,8 @@ Page({
     contentNodes: {},
     cursorPosition: 0,
     editorFocused: false,
+    editorReady: false,
+    editorValue: '',
     loading: true,
     saving: false,
     saveStatus: '已同步',
@@ -162,6 +164,7 @@ Page({
       }
       const folderOptions = buildFolderOptions(folders || [])
       const folderIndex = Math.max(0, folderOptions.findIndex((folder) => String(folder.id) === String(note.folderId || '')))
+      const editing = Boolean(this._openInEditMode)
       this.setData({
         note: normalizedNote,
         folders: folders || [],
@@ -171,14 +174,50 @@ Page({
         tags: (tags || []).map((tag) => ({ ...tag, selected: (normalizedNote.tagList || []).some((item) => String(item.id) === String(tag.id)) })),
         histories: this.normalizeHistories(historyResult.records || []),
         contentNodes: renderNoteContent(normalizedNote.content, this.data.theme),
-        editing: this._openInEditMode,
+        editing,
+        editorReady: false,
+        editorValue: editing ? normalizedNote.content : '',
         loading: false,
         saveStatus: '已同步'
+      }, () => {
+        if (editing) {
+          this.setData({ editorReady: true }, () => this.syncEditorValue(normalizedNote.content))
+        }
+        this.restoreLocalDraft()
       })
-      this.restoreLocalDraft()
     } catch (error) {
-      this.setData({ loading: false, error: error.message || '笔记打开失败' })
+      this.setData({ loading: false, error: error.message || '笔记打开失败', editorReady: false })
     }
+  },
+
+  /**
+   * 在原生 textarea 挂载完成后重新写入正文。
+   *
+   * 部分微信客户端在 textarea 尚未挂载时接收长 value，会按默认的 140
+   * 字符截断初始值。先延迟挂载，再在 nextTick 写入，可以避免这个原生组件问题。
+   *
+   * @param {string} content 需要写入编辑框的正文。
+   * @param {number|null} cursorPosition 写入完成后要恢复的光标位置。
+   * @returns {void}
+   */
+  syncEditorValue(content, cursorPosition = null) {
+    const value = String(content || '')
+    const targetCursor = cursorPosition === null
+      ? Math.max(0, Number(this.data.cursorPosition || 0))
+      : Math.max(0, Math.min(Number(cursorPosition), value.length))
+    this._editorExpectedValue = value
+    this._editorHydrating = true
+    this.setData({ editorValue: value }, () => {
+      const restoreCursor = () => {
+        this.setData({ cursorPosition: targetCursor }, () => {
+          const release = () => { this._editorHydrating = false }
+          if (typeof wx.nextTick === 'function') wx.nextTick(release)
+          else setTimeout(release, 0)
+        })
+      }
+      if (typeof wx.nextTick === 'function') wx.nextTick(restoreCursor)
+      else setTimeout(restoreCursor, 0)
+    })
   },
 
   normalizeHistories(histories) {
@@ -218,6 +257,8 @@ Page({
    */
   applyLocalDraft(draft) {
     const note = { ...this.data.note, ...draft }
+    const content = normalizeNoteContent(note.content)
+    note.content = content
     const folderIndex = Math.max(0, this.data.folderOptions.findIndex((folder) => String(folder.id) === String(note.folderId || '')))
     const folder = this.data.folderOptions[folderIndex]
     const selectedTagIds = new Set((note.tagList || []).map((tag) => String(tag.id)))
@@ -227,7 +268,10 @@ Page({
       folderName: folder ? folder.name : '未分类',
       tags: this.data.tags.map((tag) => ({ ...tag, selected: selectedTagIds.has(String(tag.id)) })),
       contentNodes: renderNoteContent(note.content, this.data.theme),
+      editorValue: this.data.editing ? content : this.data.editorValue,
       saveStatus: '本地草稿'
+    }, () => {
+      if (this.data.editing) this.syncEditorValue(content)
     })
     this._dirty = true
   },
@@ -237,9 +281,16 @@ Page({
   },
 
   updateContent(event) {
-    this._selectionStart = Number(event.detail.cursor || event.detail.value.length)
+    const value = String(event.detail.value || '')
+    const expectedValue = String(this._editorExpectedValue || '')
+    if (this._editorHydrating && expectedValue.length > value.length && expectedValue.startsWith(value)) {
+      this.setData({ editorValue: expectedValue })
+      return
+    }
+    this._editorHydrating = false
+    this._selectionStart = Number(event.detail.cursor || value.length)
     this._selectionEnd = this._selectionStart
-    this.setData({ 'note.content': event.detail.value }, () => this.scheduleSave())
+    this.setData({ 'note.content': value, editorValue: value }, () => this.scheduleSave())
   },
 
   /**
@@ -248,7 +299,10 @@ Page({
    * @returns {void}
    */
   enterEditMode() {
-    this.setData({ editing: true, showBackTop: false, historyVisible: false, metadataVisible: false, cursorPosition: 0 })
+    const content = String(this.data.note && this.data.note.content || '')
+    this.setData({ editing: true, editorReady: false, editorValue: content, showBackTop: false, historyVisible: false, metadataVisible: false, cursorPosition: 0 }, () => {
+      this.setData({ editorReady: true }, () => this.syncEditorValue(content))
+    })
   },
 
   /**
@@ -286,6 +340,8 @@ Page({
     this._openInEditMode = false
     this.setData({
       editing: false,
+      editorReady: false,
+      editorValue: '',
       showBackTop: false,
       editorFocused: false,
       metadataVisible: false,
@@ -381,6 +437,7 @@ Page({
     this._selectionEnd = cursorPosition
     this.setData({
       'note.content': nextContent,
+      editorValue: nextContent,
       cursorPosition,
       editorFocused: true
     }, () => this.scheduleSave())

@@ -2,7 +2,7 @@ const config = require('./config');
 
 Component({
 	options: {
-		styleIsolation: 'apply-shared'
+		styleIsolation: 'shared'
 	},
 	properties: {
 		nodes: {

@@ -15,7 +15,8 @@
     --h2w-border: #eee;
     --h2w-thead-bg: #f6f8fa;
     --h2w-stripe-bg: #fbfcfd;
-    --h2w-cell-border: #dfe2e5;
+    --h2w-cell-border: #b8c4d2;
+    --h2w-table-bg: #ffffff;
     --h2w-pre-bg: #f4f7fb;
     --h2w-pre-border: #dce5f0;
     --h2w-code-bg: #f6f8fa;
@@ -55,7 +56,8 @@
     --h2w-border: #3d3d3d;
     --h2w-thead-bg: #1f1f1f;
     --h2w-stripe-bg: #090909;
-    --h2w-cell-border: #333;
+    --h2w-cell-border: #50647d;
+    --h2w-table-bg: #122033;
     --h2w-pre-bg: #08111f;
     --h2w-pre-border: #2a3b52;
     --h2w-code-bg: #272822;
@@ -180,11 +182,13 @@
     border-spacing: 0;
     display: table;
     margin-bottom: 40rpx;
+    border: 1rpx solid var(--h2w-cell-border);
+    background-color: var(--h2w-table-bg);
     white-space: nowrap;
 }
 
 .h2w__table .h2w__tr:nth-child(2n) {
-    background-color: red;
+    background-color: var(--h2w-stripe-bg);
 }
 
 .h2w__colgroup {
@@ -215,13 +219,18 @@
 .h2w__td {
     padding: 8rpx 16rpx;
     font-size: 28rpx;
-    border-width: 1rpx;
-    border-style: solid;
+    border: 1rpx solid var(--h2w-cell-border);
+    box-sizing: border-box;
     display: table-cell;
+}
+
+.h2w__td {
+    background-color: var(--h2w-table-bg);
 }
 
 .h2w__th {
     font-weight: bold;
+    background: var(--h2w-thead-bg);
 }
 
 /**代码块**/
@@ -301,6 +310,43 @@
     display: list-item;
 }
 
+/* 小程序的 view 不稳定支持 list-item/list-style，列表符号由解析器并入
+ * 每项的首个文字节点；代码块行号列表保留原有布局。 */
+.h2w__ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.h2w__ol {
+    padding-left: 0;
+    list-style: none;
+}
+
+.h2w__li {
+    display: block;
+    margin: 8rpx 0;
+    list-style: none;
+}
+
+.h2w__li .h2w__ul {
+    margin-bottom: 0;
+    padding-left: 1.6rem;
+}
+
+.h2w__lineNum {
+    padding-left: 1rem;
+    list-style: none;
+}
+
+.h2w__lineNum .h2w__li {
+    display: block;
+    margin: 0;
+}
+
+.h2w__lineNum > .h2w__li::before {
+    content: none;
+}
+
 /**todo**/
 .h2w__todogroup {
     margin-bottom: 40rpx;
@@ -331,13 +377,13 @@
 
 /**一级ul样式**/
 .h2w__ul {
-    list-style-type: disc;
+    list-style-type: none;
 }
 
 /**二级ul样式**/
 .h2w__ul .h2w__ul,
 .h2w__ol .h2w__ul {
-    list-style-type: circle;
+    list-style-type: none;
 }
 
 /**三级样式**/
@@ -345,7 +391,7 @@
 .h2w__ol .h2w__ul .h2w__ul,
 .h2w__ul .h2w__ol .h2w__ul,
 .h2w__ul .h2w__ul .h2w__ul {
-    list-style-type: square;
+    list-style-type: none;
 }
 
 /**块元素**/

@@ -21,4 +21,6 @@
 - [2026-08-09 登录密码不做长度校验](entries/2026-08-09-login-password-validation.md)：登录不再前端拦截密码长度，注册规则保持不变。
 - [2026-08-09 小程序源码包超限](entries/2026-08-09-mini-source-package-limit.md)：打包忽略 GitNexus 缓存、IDE 配置、文档和测试目录，避免超过 2MB 限制。
 - [2026-08-09 笔记列表摘要纯文本](entries/2026-08-09-note-preview-plain-text.md)：列表摘要清理 HTML、换行和 Markdown 标记，详情正文保持原渲染。
+- [2026-08-09 小程序富文本渲染修复](entries/2026-08-09-mini-rich-text-rendering.md)：移除块间格式换行造成的异常间距，并用稳定的 flex 项目符号修复无序列表错位。
+- [2026-08-09 笔记编辑页双滚动条](entries/2026-08-09-note-editor-scrollbar.md)：编辑状态固定内容区高度，隐藏页面外层滚动，只保留 textarea 正文滚动。
 - [2026-08-08 小程序直接注册账号](entries/2026-08-08-wechat-applet-register.md)：未绑定微信可在“我”页填写用户名、密码和选填昵称；用户名失焦校验重复，注册后笔记与个人中心各刷新一次。

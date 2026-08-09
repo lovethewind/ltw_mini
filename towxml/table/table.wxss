@@ -1,0 +1,4 @@
+/** 表格节点由独立组件承载，显式引入样式确保真机和 Skyline 都能看到网格。 */
+@import '../style/main.wxss';
+@import '../style/theme/light.wxss';
+@import '../style/theme/dark.wxss';
